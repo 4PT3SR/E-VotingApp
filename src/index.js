@@ -25,11 +25,11 @@ const PORT = process.env.PORT || 6900;
 app.use(express.json());
 app.use(limiter)
 app.use(express.urlencoded({ extended: true}));
-app.use('/learngrazac/api/user',userRouter);
-app.use('/learngrazac/api/post',postRouter);
-app.use('/learngrazac/api/',commentRouter);
-app.use('/learngrazac/api/',paymentRouter);
-app.use('/learngrazac/api/',adminRouter);
+app.use('/api/user',userRouter);
+app.use('/api/post',postRouter);
+app.use('/api/',commentRouter);
+app.use('/api/',paymentRouter);
+app.use('/api/',adminRouter);
 // app.use('learngrazac/api/',paymentRouter);
 
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
