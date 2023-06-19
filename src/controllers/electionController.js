@@ -129,17 +129,36 @@ exports.vote = async (req, res, next) => {
 
 exports.getAllElections = async (req, res, next) => {
     try {
-        const queryObj = {
-            ...req.query
-        };
-        const excludedFields = ['page', 'sort', 'limit', 'fields'];
-        excludedFields.forEach(excludedField => delete queryObj[excludedField]);
+        // const queryObj = {
+        //     ...req.query
+        // };
+        // const excludedFields = ['page', 'sort', 'limit', 'fields'];
+        // excludedFields.forEach(excludedField => delete queryObj[excludedField]);
 
         // Filtering
-        let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-        let query = Election.find(JSON.parse(queryStr));
+        // let queryStr = JSON.stringify(queryObj);
+        // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+        // let query = Election.find(JSON.parse(queryStr));
 
+        //Filtering
+        let status = req.query.status.toLowerCase() || "all";
+        let query;
+        let currentDate = new Date();
+
+        switch (status) {
+            case "active":
+                query = Election.find({}).where('start').lt(currentDate).where('end').gt(currentDate);
+                break;
+            case "upcoming":
+                query = Election.find({}).where('start').gt(currentDate);
+                break;
+            case "inactive":
+                query = Election.find({}).where('end').lt(currentDate);
+                break;
+            default:
+                query = Election.find({})
+
+        }
 
         //Pagination
         const page = req.query.page * 1 || 1;
@@ -149,8 +168,8 @@ exports.getAllElections = async (req, res, next) => {
         query = query.skip(skip).limit(limit);
 
         if (req.query.page) {
-            const numPosts = await Post.countDocuments();
-            if (skip >= numPosts) throw new AppError('This page does not exist', 404);
+            const numElections = await Election.countDocuments();
+            if (skip >= numElections) throw new AppError('This page does not exist', 404);
         }
         // need to add filter for active ones
         let elections = await query;
