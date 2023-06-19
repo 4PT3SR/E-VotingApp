@@ -1,25 +1,75 @@
-const {registerSchema,loginSchema,recoverPasswordEmailSchema,PasswordSchema} = require('../utils/joiValidation');
+const puppeteer = require('puppeteer');
+const {
+  registerSchema,
+  loginSchema
+} = require('../utils/joiValidation');
 const User = require('../models/userModel')
 const AppError = require('../utils/AppError');
-const crypto = require('crypto');
+// const crypto = require('crypto');
+const extractName = require('../helpers/extractName');
 // const sendMail = require('../utils/sendMail');
+const generateToken = require('../utils/genAuthToken');
 
 
 // @route                  POST /register
 // @description
 // @acccess                PUBLIC
-exports.register = async(req,res,next) => {
-    try {
+exports.register = async (req, res, next) => {
+  try {
+    const body = await registerSchema.validateAsync(req.body);
+    const browser = await puppeteer.launch({
+      headless: false
+    });
 
-        const body = await registerSchema.validateAsync(req.body)
-        const user = await User.create(body);
-        let token = await user.generateAuthToken();
-         res.status(200).json({status:'Success',message:'User has been registered',user,authToken:token});
-
-        // res.status(201).json({status: 'Success'});
-    } catch (error) {
-        next(error);
+    const page = await browser.newPage();
+    await page.goto('https://portal.bellsuniversity.edu.ng/');
+    await page.waitForSelector('#mat');
+    await page.type('#mat', body.matric_number);
+    await page.type('#pass', body.password);
+    await page.click(".btn.btn-warning.pull-right");
+    const pageTitle = await page.evaluate(() => document.title);
+    const loginError = pageTitle.includes('Login Page');
+    if (loginError) {
+      throw new AppError('Invalid Matric Number/Passsword', 201);
     }
+    await page.waitForSelector('.middle-nav');
+    await page.click('a[href="profile.php"]');
+    await page.waitForSelector('#DataTables_Table_0');
+    const bioData = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('.dataTable tbody tr td u'), e => e.textContent)
+    })
+
+
+
+
+    let selectedData = bioData.filter((_, index) => (index + 1) % 2 === 0);
+
+    await browser.close();
+    const fullname = extractName(selectedData[1]);
+    let studentInfo = {
+      matric_number: selectedData[0],
+      last_name: fullname[0],
+      first_name: fullname[1],
+      level: selectedData[21],
+      faculty: selectedData[23],
+      department: selectedData[22],
+      email: selectedData[7],
+      password: body.password
+
+    }
+
+
+    await User.create(studentInfo);
+    res.status(200).json({
+      status: 'Success',
+      message: 'Student registered successfuly'
+    });
+
+
+
+  } catch (error) {
+    next(error);
+  }
 }
 
 
@@ -27,17 +77,23 @@ exports.register = async(req,res,next) => {
 // @route                  POST /login
 // @description
 // @acccess                PUBLIC
-exports.login = async (req,res,next) => {
-    try {
-         const payload = await loginSchema.validateAsync(req.body);
-         const {email,password} = payload;
-         const user = await User.getCredentials(email,password);
-         let token = await user.generateAuthToken();
-         res.status(200).json({status: 'success',user,authToken:token});
+exports.login = async (req, res, next) => {
+  try {
+    const payload = await loginSchema.validateAsync(req.body);
+    const {
+      matric_number,
+      password
+    } = payload;
+    const user = await User.getCredentials(matric_number, password);
+    generateToken(res, user._id);
+    res.status(200).json({
+      status: 'success',
+      user
+    });
 
-    } catch (error) {
-        next(error);
-    }
+  } catch (error) {
+    next(error);
+  }
 }
 
 
@@ -45,21 +101,30 @@ exports.login = async (req,res,next) => {
 // @description
 // @acccess                auth(user,manager,admin,staff)
 
-// exports.logout = async (req,res,next) => {
-//     try { 
-//         let user = req.user
-//         let currentToken = req.authToken;
-//         user.tokens = user.tokens.filter(token =>{
-//         return token.token !== currentToken;
-//      });
-//      await user.save()
-//      res.status(200).json({status: 'Success',message:'Logged out sucessfully'});
-//      } catch (err) {
-//          next(e);
-//      }
- 
-//  }
- 
+exports.logout = async (req, res, next) => {
+  // try { 
+  //     let user = req.user
+  //     let currentToken = req.authToken;
+  //     user.tokens = user.tokens.filter(token =>{
+  //     return token.token !== currentToken;
+  //  });
+  //  await user.save()
+  //  res.status(200).json({status: 'Success',message:'Logged out sucessfully'});
+  //  } catch (err) {
+  //      next(e);
+  //  }
+
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0)
+  })
+
+  res.status(200).json({
+    message: 'Logged out'
+  })
+
+}
+
 
 
 // @route                  POST /logoutall
@@ -149,7 +214,7 @@ exports.login = async (req,res,next) => {
 //  }
 
 
- // @route                  POST /manager
+// @route                  POST /manager
 // @description
 // @acccess                auth(manager)
 
@@ -163,7 +228,7 @@ exports.login = async (req,res,next) => {
 //  }
 
 
- // @route                  POST /admin
+// @route                  POST /admin
 // @description
 // @acccess                auth(admin)
 

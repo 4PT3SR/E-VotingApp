@@ -14,31 +14,27 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    username: {
+    matric_number: {
         type: String,
         required: true,
-        unique: [true,'Username is taken']
+        unique: [true, 'Matric number is already registered']
     },
     email: {
         type: String,
         required: true,
-        unique: [true,'Email already registered']
+        unique: [true, 'Email already registered']
     },
     role: {
         type: String,
-        enum: ['USER','ADMIN'],
+        enum: ['USER', 'ADMIN'],
         default: 'USER'
-    },status:{
-        type: String,
-        enum: ['Subscribed','Free'],
-        default: 'Free'
     },
     isAdmin: {
         type: Boolean,
         default: false,
-        validate:{
-            validator:function() {
-                if(this.role === 'ADMIN') {
+        validate: {
+            validator: function () {
+                if (this.role === 'ADMIN') {
                     this.isAdmin = true
                 }
             }
@@ -46,8 +42,8 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required:true,
-        minlength: 8
+        required: true,
+        minlength: 6
     },
     password_reset_token: {
         type: String
@@ -55,55 +51,64 @@ const userSchema = new mongoose.Schema({
     password_reset_token_expiry: {
         type: Date
     },
-    posts: [{type: mongoose.Schema.Types.ObjectId,ref:'post'}],
-    tokens:[{token: {
-        type: String,
-        required: true
-    }}]
-},{timestamps:true});
+    posts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'post'
+    }],
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
+}, {
+    timestamps: true
+});
 
-userSchema.pre('save', async function (next){
+userSchema.pre('save', async function (next) {
     const user = this;
-    if(user.isModified('password')) {
-        user.password = await bcrypt.hash(user.password,10);
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 10);
     }
     next()
-} )
+})
 
-userSchema.statics.getCredentials = async function (email,password) {
+userSchema.statics.getCredentials = async function (matric_number, password) {
 
-    let user = await User.findOne({email:email});
-     let errResponse = 'Incorrect Email or Password'
-     if(!user) {
-         throw new AppError(errResponse,400);
-     }
-     let isPasswordCorrect = await bcrypt.compare(password, user.password);
-     
-     if(!isPasswordCorrect) {
-         throw new AppError(errResponse,400);
-     }
-     return user;
- }
+    let user = await User.findOne({
+        matric_number
+    });
+    let errResponse = 'Incorrect Matric Number or Password'
+    if (!user) {
+        throw new AppError(errResponse, 400);
+    }
+    let isPasswordCorrect = await bcrypt.compare(password, user.password);
 
- userSchema.methods.generateAuthToken = async function() {
-    const user = this;
-    let token = jwt.sign({_id:user._id.toString()},process.env.jwt_secret);
-    user.tokens = user.tokens.concat({token});
-    await user.save();
-    return token;
-
+    if (!isPasswordCorrect) {
+        throw new AppError(errResponse, 400);
+    }
+    return user;
 }
 
-userSchema.methods.generatePasswordResetToken = function() {
-    const user = this;
-    const passwordResetToken = crypto.randomBytes(32).toString('hex');
-    user.password_reset_token = crypto.createHash('sha256').update(passwordResetToken).digest('hex');
-    user.password_reset_token_expiry = Date.now() + 5 * 60 * 1000;
-    user.save();
-    return passwordResetToken;
-}
+//  userSchema.methods.generateAuthToken = async function() {
+//     const user = this;
+//     let token = jwt.sign({_id:user._id.toString()},process.env.jwt_secret);
+//     user.tokens = user.tokens.concat({token});
+//     await user.save();
+//     return token;
 
-userSchema.methods.toJSON = function() {
+// }
+
+// userSchema.methods.generatePasswordResetToken = function() {
+//     const user = this;
+//     const passwordResetToken = crypto.randomBytes(32).toString('hex');
+//     user.password_reset_token = crypto.createHash('sha256').update(passwordResetToken).digest('hex');
+//     user.password_reset_token_expiry = Date.now() + 5 * 60 * 1000;
+//     user.save();
+//     return passwordResetToken;
+// }
+
+userSchema.methods.toJSON = function () {
 
     const user = this;
     let userObject = user.toObject();
@@ -116,10 +121,7 @@ userSchema.methods.toJSON = function() {
     return userObject;
 }
 
-const User = new mongoose.model('User',userSchema);
+const User = new mongoose.model('User', userSchema);
 
 
 module.exports = User;
-
-
-

@@ -1,3 +1,39 @@
+// const mongoose = require('mongoose');
+// // const bcrypt = require('bcrypt');
+// // const jwt = require('jsonwebtoken');
+// // const crypto = require('crypto');
+// const AppError = require('../utils/AppError')
+
+// const postSchema = new mongoose.Schema({
+//     title: {
+//         type:String,
+//         required: true,
+//     }, body: {
+//         type:String,
+//         required: true,
+//     },attachment: {
+//         type: String
+//     },
+//     cloudinary_id:{
+//         type:String
+//     },
+//     author: {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: 'User',
+//         required:true
+//     },comments:[{
+//         type: mongoose.Schema.Types.ObjectId,ref:'comment'
+//     }]
+
+// },{timestamps:true});
+
+
+
+// const Post = new mongoose.model('post',postSchema);
+
+
+// module.exports = Post;
+
 const mongoose = require('mongoose');
 // const bcrypt = require('bcrypt');
 // const jwt = require('jsonwebtoken');
@@ -6,30 +42,27 @@ const AppError = require('../utils/AppError')
 
 const postSchema = new mongoose.Schema({
     title: {
-        type:String,
+        type: String,
         required: true,
-    }, body: {
-        type:String,
-        required: true,
-    },attachment: {
-        type: String
+        unique: true
     },
-    cloudinary_id:{
-        type:String
-    },
-    author: {
+    candidates: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required:true
-    },comments:[{
-        type: mongoose.Schema.Types.ObjectId,ref:'comment'
-    }]
+        ref: 'candidate'
+    }],
+    election: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'election',
+        required: true
+    }
 
-},{timestamps:true});
+}, {
+    timestamps: true
+});
 
 
 
-const Post = new mongoose.model('post',postSchema);
+const Post = new mongoose.model('post', postSchema);
 
 
 module.exports = Post;
