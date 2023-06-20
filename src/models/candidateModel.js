@@ -5,11 +5,7 @@ const mongoose = require('mongoose');
 const AppError = require('../utils/AppError')
 
 const candidateSchema = new mongoose.Schema({
-    first_name: {
-        type: String,
-        required: true,
-    },
-    last_name: {
+    fullname: {
         type: String,
         required: true,
     },

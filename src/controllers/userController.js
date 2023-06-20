@@ -17,9 +17,7 @@ const generateToken = require('../utils/genAuthToken');
 exports.register = async (req, res, next) => {
   try {
     const body = await registerSchema.validateAsync(req.body);
-    const browser = await puppeteer.launch({
-      headless: false
-    });
+    const browser = await puppeteer.launch({});
 
     const page = await browser.newPage();
     await page.goto('https://portal.bellsuniversity.edu.ng/');

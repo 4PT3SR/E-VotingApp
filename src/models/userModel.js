@@ -51,10 +51,6 @@ const userSchema = new mongoose.Schema({
     password_reset_token_expiry: {
         type: Date
     },
-    posts: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'post'
-    }],
     tokens: [{
         token: {
             type: String,

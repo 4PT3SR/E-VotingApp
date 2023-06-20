@@ -43,14 +43,12 @@ const electionSchema = Joi.object({
 // const postSchema = Joi.object({
 //   title: Joi.string().trim().required()
 // })
-const postSchema = Joi.array().items(
-  Joi.object({
-    title: Joi.string().required()
-  }).required()
-);
+const postSchema = Joi.object({
+  title: Joi.string().required()
+});
 
 const candidateSchema = Joi.object({
-  name: Joi.string().required(),
+  fullname: Joi.string().required(),
 
 })
 

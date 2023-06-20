@@ -43,19 +43,21 @@ exports.createPost = async (req, res, next) => {
             throw new AppError('Oops..Election does not exist', 400);
         }
         const payload = await postSchema.validateAsync(req.body);
-        const posts = payload.map(post =>
-            new Post({
-                ...post,
-                election: relatedElection
-            })
-        )
+        const post = new Post({
+            ...payload,
+            election: relatedElection
+        });
 
-        const Electionposts = await Post.create(posts);
 
+        await post.save();
+
+        election.posts.push(post._id);
+
+        await election.save();
 
         res.status(200).json({
             status: 'success',
-            data: Electionposts
+            data: post
         })
 
     } catch (error) {
@@ -91,7 +93,12 @@ exports.createCandidate = async (req, res, next) => {
             candidate.cloudinary_id = result.public_id;
         }
 
-        await post.save();
+        await candidate.save();
+
+        post.candidates.push(candidate._id);
+
+        post.save();
+
 
         res.status(201).json({
             message: 'Success',
@@ -141,7 +148,8 @@ exports.getAllElections = async (req, res, next) => {
         // let query = Election.find(JSON.parse(queryStr));
 
         //Filtering
-        let status = req.query.status.toLowerCase() || "all";
+        let status = req.query.status || "all";
+        status = status.toLowerCase()
         let query;
         let currentDate = new Date();
 
@@ -172,7 +180,7 @@ exports.getAllElections = async (req, res, next) => {
             if (skip >= numElections) throw new AppError('This page does not exist', 404);
         }
         // need to add filter for active ones
-        let elections = await query;
+        let elections = await query;;
 
         res.status(200).json({
             message: 'Success',
@@ -187,10 +195,19 @@ exports.getAllElections = async (req, res, next) => {
 exports.getElection = async (req, res, next) => {
     try {
         let electionId = req.params.id;
-        const election = await Election.findById(electionId);
-        if (!election) {
+        const query = Election.findById(electionId);
+        if (!query) {
             throw new AppError('Election not found', 400)
         }
+
+        const election = await query.populate([{
+            path: 'posts',
+            select: '_id title candidates',
+            populate: {
+                path: 'candidates',
+                select: '-post -updatedAt -createdAt -__v'
+            }
+        }]);
         res.status(200).json({
             status: 'Success',
             data: election
