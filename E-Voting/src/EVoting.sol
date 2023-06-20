@@ -51,7 +51,7 @@ contract EVoting is Ownable {
     event CandidateCreated(string indexed _candidateName, ElectionType indexed _electionType, uint256 indexed _electionId);
     event VoteCasted(uint256 indexed _electionId, uint256 indexed _candidateId);
     
-    function createElectiton(string memory _title, uint256 _start, uint256 _end, uint8 _electionType) public onlyOwner {
+    function createElection(string memory _title, uint256 _start, uint256 _end, uint8 _electionType) public onlyOwner {
       require(block.timestamp <= _start && _start < _end, "EVoting: Invalid election duration!");
       require(_electionType < 3, "EVoting: Election type!");
 
@@ -63,14 +63,15 @@ contract EVoting is Ownable {
           election_type: ElectionType(_electionType)
         });
 
-      Elections[electionId.current()] = _temp;
+      Elections[electionId.current() + 1] = _temp;
       electionId.increment();
 
       emit ElectionCreated(_title, ElectionType(_electionType));
     }
     
-    function registerCandidates(uint256 _electionId, string memory _candidateName, uint8 _electionType) public onlyOwner {
+    function registerCandidate(uint256 _electionId, string memory _candidateName, uint8 _electionType) public onlyOwner {
       require(!Elections[_electionId].isActive && Elections[_electionId].start > block.timestamp && Elections[_electionId].end > block.timestamp, "EVoting: Can't register candidate after start or end!");
+      require(ElectionType(Elections[_electionId].election_type) == ElectionType(_electionType), "EVoting: Wrong election!");
       
       Candidate memory _candidate = Candidate({
         candidateName: _candidateName,
