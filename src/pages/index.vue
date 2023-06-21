@@ -15,5 +15,5 @@
 
 <route lang="yaml">
 meta:
-  layout: auth
+  layout: default
 </route>
