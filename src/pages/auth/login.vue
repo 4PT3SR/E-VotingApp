@@ -16,7 +16,7 @@ const email = ref('')
                 <div class="grid gap-5">
                     <TextInput v-model="email" type="text" label="Matriculation number" />
                     <TextInput v-model="email" type="password" label="Password" />
-                    <Button label="Log in" block loading />
+                    <Button label="Log in" block />
                 </div>
             </div>
         </div>
