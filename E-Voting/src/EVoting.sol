@@ -45,42 +45,74 @@ contract EVoting is Ownable {
     }
 
     modifier isWhitelistedToVote(string memory _matNo, string memory _email) {
-        require(isWhitelisted[keccak256(abi.encodePacked(_matNo, _email))], "EVoting: Not whitelisted!");
+        require(
+            isWhitelisted[keccak256(abi.encodePacked(_matNo, _email))],
+            "EVoting: Not whitelisted!"
+        );
         _;
     }
 
-    modifier hasVoted(uint256 _electionId, string memory _matNo, string memory _email) {
-      bytes32 _bVoter = keccak256(abi.encodePacked(_matNo, _email));
-      require(!userVoted[_electionId][_bVoter], "EVoting: User already voted!");
-      _;
+    modifier hasVoted(
+        uint256 _electionId,
+        string memory _matNo,
+        string memory _email
+    ) {
+        bytes32 _bVoter = keccak256(abi.encodePacked(_matNo, _email));
+        require(
+            !userVoted[_electionId][_bVoter],
+            "EVoting: User already voted!"
+        );
+        _;
     }
 
-    modifier isRegisteredForDifferentOrSameElections(uint256 _electionId,
+    modifier isRegisteredForDifferentOrSameElections(
+        uint256 _electionId,
         string memory _candidateName,
-        string memory _post) {
-          bytes32 _bPost = keccak256(abi.encodePacked(_post));
-          Candidate[] memory temp = CandidateStats[_electionId][_bPost];
-          bytes32 emptyStringPost = keccak256(abi.encodePacked(""));
+        string memory _post
+    ) {
+        bytes32 _bPost = keccak256(abi.encodePacked(_post));
+        Candidate[] memory temp = CandidateStats[_electionId][_bPost];
+        bytes32 emptyStringPost = keccak256(abi.encodePacked(""));
 
-          for(uint256 i = 0; i < temp.length; i++) {
+        for (uint256 i = 0; i < temp.length; i++) {
             Candidate memory tempCandidate = temp[i];
-            if (keccak256(abi.encodePacked(tempCandidate.candidateName)) == keccak256(abi.encodePacked(_candidateName))) {
-              // require(keccak256(abi.encodePacked(tempCandidate.post)) == emptyStringPost, "EVoting: Candidate registered for a different Post!");
-              require(keccak256(abi.encodePacked(_post)) != keccak256(abi.encodePacked(tempCandidate.post)), "EVoting: Candidate already registered!");
+            if (
+                keccak256(abi.encodePacked(tempCandidate.candidateName)) ==
+                keccak256(abi.encodePacked(_candidateName))
+            ) {
+                // require(keccak256(abi.encodePacked(tempCandidate.post)) == emptyStringPost, "EVoting: Candidate registered for a different Post!");
+                require(
+                    keccak256(abi.encodePacked(_post)) !=
+                        keccak256(abi.encodePacked(tempCandidate.post)),
+                    "EVoting: Candidate already registered!"
+                );
             }
-          }
-          _;
         }
+        _;
+    }
 
-    event ElectionCreated(string indexed _title, ElectionType indexed _electionType);
+    event ElectionCreated(
+        string indexed _title,
+        ElectionType indexed _electionType
+    );
     event VoterRegistered(string indexed _matNo);
     event CandidateCreated(
-        string indexed _candidateName, ElectionType indexed _electionType, uint256 indexed _electionId
+        string indexed _candidateName,
+        ElectionType indexed _electionType,
+        uint256 indexed _electionId
     );
     event VoteCasted(uint256 indexed _electionId, uint256 indexed _candidateId);
 
-    function createElection(string memory _title, uint256 _start, uint256 _end, uint8 _electionType) public onlyOwner {
-        require(block.timestamp <= _start && _start < _end, "EVoting: Invalid election duration!");
+    function createElection(
+        string memory _title,
+        uint256 _start,
+        uint256 _end,
+        uint8 _electionType
+    ) public onlyOwner {
+        require(
+            block.timestamp <= _start && _start < _end,
+            "EVoting: Invalid election duration!"
+        );
         require(_electionType < 3, "EVoting: Election type!");
 
         Election memory _temp = Election({
@@ -102,14 +134,24 @@ contract EVoting is Ownable {
         string memory _candidateName,
         string memory _post,
         uint8 _electionType
-    ) public onlyOwner isRegisteredForDifferentOrSameElections(_electionId, _candidateName, _post) {
+    )
+        public
+        onlyOwner
+        isRegisteredForDifferentOrSameElections(
+            _electionId,
+            _candidateName,
+            _post
+        )
+    {
         require(
-            !Elections[_electionId].isActive && Elections[_electionId].start > block.timestamp
-                && Elections[_electionId].end > block.timestamp,
+            !Elections[_electionId].isActive &&
+                Elections[_electionId].start > block.timestamp &&
+                Elections[_electionId].end > block.timestamp,
             "EVoting: Can't register candidate after start or end!"
         );
         require(
-            ElectionType(Elections[_electionId].election_type) == ElectionType(_electionType),
+            ElectionType(Elections[_electionId].election_type) ==
+                ElectionType(_electionType),
             "EVoting: Wrong election!"
         );
 
@@ -121,12 +163,21 @@ contract EVoting is Ownable {
             election_type: ElectionType(_electionType)
         });
 
-        CandidateStats[_electionId][keccak256(abi.encodePacked(_post))].push(_candidate);
+        CandidateStats[_electionId][keccak256(abi.encodePacked(_post))].push(
+            _candidate
+        );
 
-        emit CandidateCreated(_candidateName, ElectionType(_electionType), _electionId);
+        emit CandidateCreated(
+            _candidateName,
+            ElectionType(_electionType),
+            _electionId
+        );
     }
 
-    function registerVoter(string memory _matNo, string memory email) public onlyOwner {
+    function registerVoter(string memory _matNo, string memory email)
+        public
+        onlyOwner
+    {
         bytes32 voterID = keccak256(abi.encodePacked(_matNo, email));
         isWhitelisted[voterID] = true;
 
@@ -140,13 +191,21 @@ contract EVoting is Ownable {
         string memory _post,
         string memory _matNo,
         string memory _email
-    ) public onlyOwner isWhitelistedToVote(_matNo, _email) hasVoted(_electionId, _matNo, _email) {
+    )
+        public
+        onlyOwner
+        isWhitelistedToVote(_matNo, _email)
+        hasVoted(_electionId, _matNo, _email)
+    {
         bytes32 _bPost = keccak256(abi.encodePacked(_post));
         bytes32 _bVoter = keccak256(abi.encodePacked(_matNo, _email));
 
-        Candidate memory _candidateTemp = CandidateStats[_electionId][_bPost][_candidateId - 1];
+        Candidate memory _candidateTemp = CandidateStats[_electionId][_bPost][
+            _candidateId - 1
+        ];
         require(
-            keccak256(abi.encodePacked(_candidateTemp.candidateName)) == keccak256(abi.encodePacked(_candidateName)),
+            keccak256(abi.encodePacked(_candidateTemp.candidateName)) ==
+                keccak256(abi.encodePacked(_candidateName)),
             "EVoting: Candidate mismatch!"
         );
 
@@ -156,7 +215,11 @@ contract EVoting is Ownable {
         emit VoteCasted(_electionId, _candidateId - 1);
     }
 
-    function getVotesByElection(uint256 _electionId, string memory _post) public view returns (Candidate[] memory) {
+    function getVotesByElection(uint256 _electionId, string memory _post)
+        public
+        view
+        returns (Candidate[] memory)
+    {
         return CandidateStats[_electionId][keccak256(abi.encodePacked(_post))];
     }
 }
