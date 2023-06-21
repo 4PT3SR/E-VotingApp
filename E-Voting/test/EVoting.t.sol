@@ -51,11 +51,12 @@ contract EVotingTest is Test {
     
     uint256 _electionId = 1;
     string memory _candidateName = "John Doe";
+    string memory _post = "Presidential";
     uint8 _electionType = 2;
 
-    evotingCore.registerCandidate(_electionId, _candidateName, _electionType);
+    evotingCore.registerCandidate(_electionId, _candidateName, _post, _electionType);
 
-    (string memory candidateName, ,) = evotingCore.CandidateStats(1, 0);
+    (string memory candidateName, , ,) = evotingCore.CandidateStats(1, keccak256(abi.encodePacked(_post)), 0);
     assertTrue(keccak256(abi.encodePacked(candidateName)) == keccak256(abi.encodePacked(_candidateName)));
 
     vm.stopPrank();
@@ -68,17 +69,52 @@ contract EVotingTest is Test {
     
     uint256 _electionId = 1;
     string memory _candidateName = "Jane Doe";
+    string memory _post = "Presidential";
     uint8 _electionType = 2;
 
-    evotingCore.registerCandidate(_electionId, _candidateName, _electionType);
+    evotingCore.registerCandidate(_electionId, _candidateName, _post, _electionType);
 
-    (string memory candidateName, ,) = evotingCore.CandidateStats(1, 1);
+    (string memory candidateName, , ,) = evotingCore.CandidateStats(1, keccak256(abi.encodePacked(_post)), 1);
     assertTrue(
       keccak256(abi.encodePacked(candidateName)) == keccak256(abi.encodePacked(_candidateName))
     );
 
     vm.stopPrank();
   }
+
+  function testCandidateRegistrationFailAlreadyRegistered() public {
+    testCandidateRegistrationTwo();
+    
+    startHoax(address(1));
+
+    uint256 _electionId = 1;
+    string memory _candidateName = "Jane Doe";
+    string memory _post = "Presidential";
+    string memory _post2 = "Treasury";
+    uint8 _electionType = 2;
+    
+    vm.expectRevert("EVoting: Candidate already registered!");
+    evotingCore.registerCandidate(_electionId, _candidateName, _post, _electionType);
+    evotingCore.registerCandidate(_electionId, _candidateName, _post2, _electionType);
+
+    vm.stopPrank();
+  }
+
+  // function testCandidateRegistrationFailRegisteredForDifferentPost() public {
+  //   testCandidateRegistrationFailAlreadyRegistered();
+  //
+  //   startHoax(address(1));
+  //
+  //   uint256 _electionId = 1;
+  //   string memory _candidateName = "Jane Doe";
+  //   string memory _post2 = "Treasury";
+  //   uint8 _electionType = 2;
+  //   
+  //   vm.expectRevert("EVoting: Candidate registered for a different Post!");
+  //   evotingCore.registerCandidate(_electionId, _candidateName, _post2, _electionType);
+  //
+  //   vm.stopPrank();
+  // }
 
   function testRegisterVoter() public {}
 }
