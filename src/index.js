@@ -30,9 +30,6 @@ const electionRouter = require('./routes/electionRoute')
 const app = express();
 const PORT = process.env.PORT || 6900;
 // cors config
-app.use(cors({
-    origin: 'https://bellsevoting.onrender.com'
-}));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(limiter)
@@ -40,6 +37,9 @@ app.use(express.urlencoded({
     extended: true
 }));
 app.use(cookieParser());
+app.use(cors({
+    origin: '*'
+}));
 app.use('/api/user', userRouter);
 app.use('/api/election', electionRouter);
 // app.use('/api/post',postRouter);
