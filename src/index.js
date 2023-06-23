@@ -3,6 +3,7 @@ const path = require('path');
 require('dotenv').config({
     path: path.resolve(__dirname, './.env')
 });
+const cors = require('cors');
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -29,6 +30,9 @@ const electionRouter = require('./routes/electionRoute')
 const app = express();
 const PORT = process.env.PORT || 6900;
 
+app.use(cors({
+    origin: '*'
+}));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(limiter)
