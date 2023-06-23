@@ -22,13 +22,13 @@ export default defineConfig({
         'vue',
         'vue-router',
         // '@vueuse/head',
-        // '@vueuse/core',
+        '@vueuse/core',
       ],
       dts: 'src/auto-imports.d.ts',
-      // dirs: [
-      //   'src/composables',
-      //   'src/store',
-      // ],
+      dirs: [
+        'src/composables',
+        // 'src/store',
+      ],
       vueTemplate: true,
     }),
     Components({
