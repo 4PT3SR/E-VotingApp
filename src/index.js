@@ -19,8 +19,10 @@ const connectDb = require('./db/mongoose');
 const limiter = require('./utils/rateLimit')
 const notFound = require('./controllers/notFoundController');
 const globalErrorHandler = require('./controllers/globalErrorHandler');
+// routes
 const userRouter = require('./routes/userRoute');
-const electionRouter = require('./routes/electionRoute')
+const electionRouter = require('./routes/electionRoute');
+const testRouter = require('./routes/testRoute')
 // const postRouter = require('./routes/postRoute');
 // const commentRouter = require('./routes/commentRoute');
 // const paymentRouter = require('./routes/paymentRoute');
@@ -45,9 +47,7 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 // cors config
 
-app.use('/api/test', (req, res, next) => {
-    res.send('Functional')
-})
+app.use('/api/test', testRouter)
 app.use('/api/user', userRouter);
 app.use('/api/election', electionRouter);
 // app.use('/api/post',postRouter);
