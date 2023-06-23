@@ -37,9 +37,16 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 // cors config
-app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:8080']
-}));
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+// app.use(cors({
+//     origin: ['http://localhost:5173', 'http://localhost:8080']
+// }));
 app.use('/api/user', userRouter);
 app.use('/api/election', electionRouter);
 // app.use('/api/post',postRouter);
