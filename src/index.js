@@ -29,9 +29,9 @@ const electionRouter = require('./routes/electionRoute')
 
 const app = express();
 const PORT = process.env.PORT || 6900;
-
+// cors config
 app.use(cors({
-    origin: '*'
+    origin: ['*', 'http://localhost:5173']
 }));
 app.use(express.json());
 app.use(bodyParser.json());
