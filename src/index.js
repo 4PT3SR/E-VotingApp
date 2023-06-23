@@ -45,7 +45,9 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 // cors config
 
-
+app.use('/api/test', (req, res, next) => {
+    res.send('Functional')
+})
 app.use('/api/user', userRouter);
 app.use('/api/election', electionRouter);
 // app.use('/api/post',postRouter);
