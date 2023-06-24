@@ -32,12 +32,7 @@ const testRouter = require('./routes/testRoute')
 const app = express();
 const PORT = process.env.PORT || 6900;
 
-const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
-    credentials: true,
-    optionSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(limiter)
