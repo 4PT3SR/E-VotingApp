@@ -83,10 +83,11 @@ exports.login = async (req, res, next) => {
       password
     } = payload;
     const user = await User.getCredentials(matric_number, password);
-    generateToken(res, user._id);
+    const authToken = generateToken(res, user._id);
     res.status(200).json({
       status: 'success',
-      user
+      user,
+      authToken
     });
 
   } catch (error) {
@@ -99,29 +100,29 @@ exports.login = async (req, res, next) => {
 // @description
 // @acccess                auth(user,manager,admin,staff)
 
-exports.logout = async (req, res, next) => {
-  // try { 
-  //     let user = req.user
-  //     let currentToken = req.authToken;
-  //     user.tokens = user.tokens.filter(token =>{
-  //     return token.token !== currentToken;
-  //  });
-  //  await user.save()
-  //  res.status(200).json({status: 'Success',message:'Logged out sucessfully'});
-  //  } catch (err) {
-  //      next(e);
-  //  }
+// exports.logout = async (req, res, next) => {
+// try { 
+//     let user = req.user
+//     let currentToken = req.authToken;
+//     user.tokens = user.tokens.filter(token =>{
+//     return token.token !== currentToken;
+//  });
+//  await user.save()
+//  res.status(200).json({status: 'Success',message:'Logged out sucessfully'});
+//  } catch (err) {
+//      next(e);
+//  }
 
-  res.cookie('jwt', '', {
-    httpOnly: true,
-    expires: new Date(0)
-  })
+// res.cookie('jwt', '', {
+//   httpOnly: true,
+//   expires: new Date(0)
+// })
 
-  res.status(200).json({
-    message: 'Logged out'
-  })
+// res.status(200).json({
+//   message: 'Logged out'
+// })
 
-}
+// }
 
 
 
