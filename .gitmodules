@@ -1,0 +1,6 @@
+[submodule "E-Voting/lib/forge-std"]
+	path = E-Voting/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "E-Voting/lib/openzeppelin-contracts"]
+	path = E-Voting/lib/openzeppelin-contracts
+	url = https://github.com/openzeppelin/openzeppelin-contracts
