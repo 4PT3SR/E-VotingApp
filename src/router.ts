@@ -8,3 +8,10 @@ export const router = createRouter({
     history: createWebHistory(),
     routes,
 })
+
+router.beforeEach(async (to, from) => {
+    const authRoutes = [
+        "/auth/login",
+        "/auth/signup"
+    ]
+})
