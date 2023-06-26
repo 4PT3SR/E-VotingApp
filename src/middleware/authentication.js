@@ -5,12 +5,14 @@ const AppError = require('../utils/AppError')
 
 const auth = async (req, res, next) => {
     try {
-        let authToken = req.header('Authorization').replace('Bearer ', '');
+        let authToken = req.header('Authorization');
         if (!authToken) {
             throw new AppError('No auth token', 401);
         }
+        authToken = authToken.replace('Bearer ', '')
         let payload = jwt.verify(authToken, process.env.jwt_secret);
-        let user = await User.findById(payload._id);
+
+        let user = await User.findById(payload.userId);
 
         if (!user) {
             throw new AppError('Unable to authenticate user', 401);
