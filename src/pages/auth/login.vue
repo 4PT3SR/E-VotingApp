@@ -2,11 +2,14 @@
 import * as yup from 'yup';
 import { useField, useForm } from 'vee-validate';
 import { useBaseFetch } from '~/composables/fetch';
+import { userStore } from '~/store/user';
 
+const user = userStore()
+const router = useRouter()
 const { handleSubmit, resetForm } = useForm({
   validationSchema: yup.object({
-    matric_number: yup.string().required('Please enter your email'),
-    password: yup.string().required('Please enter your name')
+    matric_number: yup.string().required('Please enter your matric number'),
+    password: yup.string().required('Please enter your password')
   }),
   initialValues: {
     matric_number: '',
@@ -31,8 +34,14 @@ const submitForm = handleSubmit(async (values: any) => {
 })
 
 onRegisterResponse(async () => {
-    console.log(token.value)
-    resetForm()
+  const { __v, createdAt, updatedAt, ...obj } = token.value.user
+  user.$patch({
+    user: obj,
+    token: token.value.authToken
+  })
+  router.push('/')
+  resetForm()
+    
 })
 
 onRegisterError(async () => {
