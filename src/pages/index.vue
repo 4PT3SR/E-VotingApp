@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useBaseFetch } from '~/composables/fetch';
 import { useTimeAgo } from '@vueuse/core';
-import { Election } from '~/types/election'
+import { Posts } from '~/types/election'
 
 const isFetching = ref(false)
-const elections = ref<Election[]>([])
+const elections = ref<Posts[]>([])
 const statuses = [
   { name: 'All', value: '/election'},
   { name: 'Active', value: '/election?status=active'},
@@ -62,7 +62,7 @@ watch(newUrl, async() => {
                 <p class="text-gray-50 text-sm line-clamp-2 text-ellipsis">{{ election.department_eligibility }}</p>
               </div>
               <div class="flex justify-end">
-                <RouterLink to="/election" class="rounded-full py-2 px-3 bg-white text-blue-600 flex justify-center items-center w-fit text-xs font-semibold">View election</RouterLink>
+                <RouterLink :to="`/election/${election._id}`" class="rounded-full py-2 px-3 bg-white text-blue-600 flex justify-center items-center w-fit text-xs font-semibold">View election</RouterLink>
               </div>
             </div>
           </div>
