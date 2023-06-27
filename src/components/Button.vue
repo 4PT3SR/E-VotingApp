@@ -1,9 +1,19 @@
 <script setup lang="ts">
-const buttonProps = defineProps<{ label: string; block?: boolean; loading?: boolean; }>()
+const buttonProps = defineProps<{
+    label: string
+    block?: boolean
+    loading?: boolean
+    rounded?: boolean
+    size?: string
+    inverted?: boolean
+}>()
 
 const buttonClass = computed(() => ({
     'e-button': true,
-    'e-button--block': buttonProps.block
+    'e-button--block': buttonProps.block,
+    'e-button--rounded': buttonProps.rounded,
+    'e-button--inverted': buttonProps.inverted,
+    [`e-button--${buttonProps.size || 'medium'}`]: true
 }))
 </script>
 
@@ -20,10 +30,26 @@ const buttonClass = computed(() => ({
 <style scoped>
 @import url("~/style.css");
 .e-button {
-    @apply flex justify-center items-center w-fit bg-blue-600 rounded-lg py-2.5 px-4 text-base text-white disabled:cursor-not-allowed font-medium focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300 ease-out
+    @apply flex justify-center items-center w-fit bg-blue-600 rounded-lg text-xs text-white disabled:cursor-not-allowed font-semibold focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300 ease-out
+}
+
+.e-button--inverted {
+    @apply bg-white text-blue-600;
 }
 
 .e-button--block {
     @apply w-full;
+}
+
+.e-button--rounded {
+    @apply rounded-full;
+}
+
+.e-button--small {
+    @apply py-2 px-3;
+}
+
+.e-button--medium {
+    @apply py-2.5 px-4;
 }
 </style>
