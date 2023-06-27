@@ -3,44 +3,70 @@ import { useBaseFetch } from '~/composables/fetch';
 import { useTimeAgo } from '@vueuse/core';
 import { Election } from '~/types/election'
 
+const isFetching = ref(false)
 const elections = ref<Election[]>([])
-
-const {
-    get,
-    data,
-    error,
-    onFetchResponse,
-    onFetchError
-} = useBaseFetch<string>('/election', { immediate: false }).json()
-
-onFetchResponse(async () => {
-  elections.value = data.value.data
+const statuses = [
+  { name: 'All', value: '/election'},
+  { name: 'Active', value: '/election?status=active'},
+  { name: 'Ended', value: '/election?status=inactive'},
+  { name: 'Upcoming', value: '/election?status=upcoming'},
+]
+const url = ref<string>('')
+const newUrl = computed(() => {
+  return url.value
 })
 
-onFetchError(async () => {
-  console.log(error.value)
-})
+const setUrl = (link: string) => {
+  url.value = link
+}
 
-get().execute()
+onMounted(async () => {
+  setUrl(statuses[0].value)
+});
+
+watch(newUrl, async() => {
+  isFetching.value = true
+  const {
+    data: res,
+    get: refetch,
+    onFetchResponse: onSuccess
+  } = useBaseFetch<string>(newUrl.value, { immediate: false }).json()
+
+  onSuccess(async () => {
+    elections.value = res.value.data
+  })
+
+  await refetch().execute()
+  isFetching.value = false
+})
 </script>
 
 <template>
-  <section class="pt-6">
-    <div class="max-w-screen-xl px-5 lg:px-0 mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <div v-for="election in elections" :key="election._id" class="grid gap-4 p-6 rounded-2xl bg-blue-600">
-          <div class="flex items-center justify-between">
-            <span class="bg-blue-50 border border-blue-200 text-blue-700 rounded-full py-0.5 px-2.5 text-xs font-medium">{{ election.election_type }}</span>
-            <span class="text-xs font-medium text-white">Ends: {{ useTimeAgo(election.end).value }}</span>
-          </div>
-          <div class="grid">
-            <h1 class="text-white text-lg font-semibold">{{ election.title }}</h1>
-            <p class="text-gray-50 text-sm line-clamp-2 text-ellipsis">{{ election.department_eligibility }}</p>
-          </div>
-          <div class="flex justify-end">
-            <Button label="Vote now" size="small" rounded inverted />
-          </div>
+  <section class="pt-6 h-full">
+    <div class="max-w-screen-xl px-5 lg:px-0 mx-auto h-full">
+      <div class="grid gap-4">
+        <div class="flex items-center justify-center gap-3">
+          <button v-for="status in statuses" :key="status.name" type="button" :class="`flex px-4 py-2 rounded-full text-sm hover:text-blue-600 ${url === status.value ? 'text-blue-600 bg-blue-50 border border-blue-500' : 'text-gray-600'}`" @click="setUrl(status.value)">{{ status.name }}</button>
         </div>
+        <Loader v-if="isFetching" />
+        <template v-else>
+          <div v-if="!elections.length" class="text-gray-600 text-base text-center w-full">No elections found.</div>
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div v-for="election in elections" :key="election._id" class="grid gap-4 p-6 rounded-2xl bg-blue-600">
+              <div class="flex items-center justify-between">
+                <span class="bg-blue-50 border border-blue-200 text-blue-700 rounded-full py-0.5 px-2.5 text-xs font-medium">{{ election.election_type }}</span>
+                <span class="text-xs font-medium text-white">Ends: {{ useTimeAgo(election.end).value }}</span>
+              </div>
+              <div class="grid">
+                <h1 class="text-white text-lg font-semibold">{{ election.title }}</h1>
+                <p class="text-gray-50 text-sm line-clamp-2 text-ellipsis">{{ election.department_eligibility }}</p>
+              </div>
+              <div class="flex justify-end">
+                <RouterLink to="/election" class="rounded-full py-2 px-3 bg-white text-blue-600 flex justify-center items-center w-fit text-xs font-semibold">View election</RouterLink>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </section>
