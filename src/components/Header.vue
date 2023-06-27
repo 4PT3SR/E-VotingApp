@@ -1,13 +1,23 @@
 <script setup lang="ts">
-
+const route = useRoute()
+const router = useRouter()
+const goBack = () => {
+  router.go(-1)
+}
 </script>
 
 <template>
   <header class="border-b border-b-gray-300 shadow-sm">
-    <nav class="py-3 container max-w-screen-2xl mx-auto">
-      <ul class="flex items-center justify-center gap-3">
-        <li><RouterLink to="/" class="hover:bg-blue-50 text-base px-2.5 py-1.5 rounded-lg select-none">Home</RouterLink></li>
-      </ul>
+    <nav class="py-3 px-5 lg:px-0 container max-w-screen-xl mx-auto">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <button v-if="route.fullPath != '/'" type="button" class="text-sm" @click="goBack()">Back</button>
+        </div>
+        <ul class="flex flex-1 items-center justify-center gap-3">
+          <li><RouterLink to="/" class="hover:bg-blue-50 text-base px-2.5 py-1.5 rounded-lg select-none">Home</RouterLink></li>
+        </ul>
+        <div class="flex-1" />
+      </div>
     </nav>
   </header>
 </template>
