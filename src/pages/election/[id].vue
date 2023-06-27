@@ -1,0 +1,47 @@
+<script setup lang="ts">
+import { useBaseFetch } from '~/composables/fetch';
+import { FullElection } from '~/types/election';
+import { useTimeAgo, useNow, useDateFormat } from '@vueuse/core';
+
+const route = useRoute()
+const url = computed(() => {
+    return `/election/${route.params.id}`
+})
+const election = ref<FullElection>()
+
+const {
+    data,
+    get,
+    isFetching,
+    onFetchResponse
+} = useBaseFetch<string>(url.value, { immediate: false }).json()
+
+onFetchResponse(async () => {
+    election.value = data.value.data
+})
+
+get().execute()
+
+const currentDate = computed(() => {
+    return useDateFormat(useNow(), 'YYYY-MM-DD (ddd)', { locales: 'en-US' })
+})
+</script>
+
+<template>
+    <section class="pt-6 h-full">
+        <div class="max-w-screen-xl px-5 lg:px-0 mx-auto h-full">
+            <Loader v-if="isFetching" />
+            <div v-else class="grid">
+                <h1 class="text-center text-xl text-gray-900 font-semibold">{{ election!.title }}</h1>
+                <p class="text-base text-gray-800 font-medium">Election type: <span class="font-normal">{{ election!.election_type }}</span></p>
+                <p class="text-base text-gray-800 font-medium">Department: <span class="font-normal">{{ election!.department_eligibility }}</span></p>
+                <p v-if="currentDate.value < election!.start" class="text-base text-gray-800 font-medium">Starts: <span class="font-normal">{{ useTimeAgo(election!.start).value }}</span></p>
+                <p v-if="currentDate.value < election!.end" class="text-base text-gray-800 font-medium">Ends: <span class="font-normal">{{ useTimeAgo(election!.end).value }}</span></p>
+            </div>
+        </div>
+    </section>
+</template>
+
+<style scoped>
+
+</style>
