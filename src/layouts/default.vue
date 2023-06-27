@@ -3,10 +3,8 @@
 </script>
 
 <template>
-    <div>
-        <Header/>
-        <RouterView />
-    </div>
+    <Header/>
+    <RouterView />
 </template>
 
 <style scoped>
