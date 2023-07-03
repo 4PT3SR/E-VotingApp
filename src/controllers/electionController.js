@@ -202,15 +202,38 @@ exports.getElection = async (req, res, next) => {
 
         const election = await query.populate([{
             path: 'posts',
-            select: '_id title candidates',
-            populate: {
-                path: 'candidates',
-                select: '-post -updatedAt -createdAt -__v'
-            }
+            select: '_id title'
+            // populate: {
+            //     path: 'candidates',
+            //     select: '-post -updatedAt -createdAt -__v'
+            // }
         }]);
         res.status(200).json({
             status: 'Success',
             data: election
+        });
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.getPost = async (req, res, next) => {
+    try {
+        const postId = req.params.id;
+        const query = Post.findById(postId);
+
+        if (!query) {
+            throw new AppError("Post not found", 400);
+        }
+
+        const post = await query.populate([{
+            path: 'candidates'
+        }])
+
+        res.status(200).json({
+            status: 'Success',
+            data: post
         });
 
     } catch (error) {
