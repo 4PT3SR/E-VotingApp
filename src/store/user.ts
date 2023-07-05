@@ -1,5 +1,4 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import { router } from "~/router";
 
 interface User {
     _id: string

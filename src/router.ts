@@ -9,9 +9,9 @@ export const router = createRouter({
     routes,
 })
 
-router.beforeEach(async (to, from) => {
-    const authRoutes = [
-        "/auth/login",
-        "/auth/signup"
-    ]
-})
+// router.beforeEach(async (to, from) => {
+//     const authRoutes = [
+//         "/auth/login",
+//         "/auth/signup"
+//     ]
+// })
