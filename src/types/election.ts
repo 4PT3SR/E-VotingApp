@@ -14,5 +14,31 @@ export interface Posts extends Election {
 }
 
 export interface FullElection extends Election {
-    posts: object[]
+    posts: {
+        _id: string
+        title: string
+        candidates: {
+                _id: string
+                fullname: string
+                votes: number
+        }[]
+    }[]
+}
+
+export interface Post {
+    _id: string
+    title: string
+    candidates: {
+        _id: string
+        fullname: string
+        votes: number
+        post: string
+        createdAt: string
+        updatedAt: string
+        __v: number
+    }[]
+    election: string
+    createdAt: string
+    updatedAt: string
+    __v: number
 }
