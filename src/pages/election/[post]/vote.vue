@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { useBaseFetch } from '~/composables/fetch';
+import { useAxiosInstance } from '~/composables/useAxiosInstance';
 import { Post } from '~/types/election';
 
+const api = useAxiosInstance()
 const route = useRoute()
 const router = useRouter()
+const isFetching = ref(false)
 const url = computed(() => {
     return `/election/posts/${route.params.post}`
 })
 const post = ref<Post>()
 
-const {
-    data,
-    get,
-    isFetching,
-    onFetchResponse
-} = useBaseFetch<string>(url.value, { immediate: false }).json()
-
-onFetchResponse(async () => {
-    post.value = data.value.data
-})
-
-get().execute()
+onMounted(() => {
+    isFetching.value = true
+    api.value.get(url.value).then((res) => {
+        post.value = res.data.data
+    }).catch((err) => {
+        console.error(err)
+    }).finally(() => isFetching.value = false)
+});
 </script>
 
 <template>
@@ -28,7 +26,7 @@ get().execute()
         <div class="max-w-screen-xl px-5 lg:px-0 mx-auto h-full">
             <Loader v-if="isFetching" />
             <div v-else class="grid">
-                <h1 class="text-center text-xl text-gray-900 font-semibold">{{ post!.title }}</h1>
+                <h1 class="text-center text-xl text-gray-900 font-semibold">{{ post?.title }}</h1>
                 <div v-if="!post?.candidates.length" class="mt-5 w-full text-center text-gray-600 text-base">No posts available</div>
                 <div v-else class="mt-5 grid divide-y divide-gray-300">
                     <div v-for="candidate in post.candidates" :key="candidate._id" class="flex items-center justify-between py-3 px-2 transition-color ease hover:bg-gray-50">

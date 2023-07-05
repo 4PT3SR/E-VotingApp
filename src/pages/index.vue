@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useBaseFetch } from '~/composables/fetch';
 import { useTimeAgo } from '@vueuse/core';
+import { useAxiosInstance } from '~/composables/useAxiosInstance';
 import { Posts } from '~/types/election'
 
+const api = useAxiosInstance()
 const isFetching = ref(false)
 const elections = ref<Posts[]>([])
 const statuses = [
@@ -26,18 +27,11 @@ onMounted(async () => {
 
 watch(newUrl, async() => {
   isFetching.value = true
-  const {
-    data: res,
-    get: refetch,
-    onFetchResponse: onSuccess
-  } = useBaseFetch<string>(newUrl.value, { immediate: false }).json()
-
-  onSuccess(async () => {
-    elections.value = res.value.data
-  })
-
-  await refetch().execute()
-  isFetching.value = false
+  api.value.get(newUrl.value).then((res) => {
+    elections.value = res.data.data
+  }).catch((err) => {
+    console.error(err)
+  }).finally(() => isFetching.value = false )
 })
 </script>
 
