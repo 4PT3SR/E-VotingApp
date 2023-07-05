@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useBaseFetch } from '~/composables/fetch';
 import { Post } from '~/types/election';
-import { useTimeAgo, useNow, useDateFormat } from '@vueuse/core';
 
 const route = useRoute()
 const router = useRouter()
@@ -22,10 +21,6 @@ onFetchResponse(async () => {
 })
 
 get().execute()
-
-const currentDate = computed(() => {
-    return useDateFormat(useNow(), 'YYYY-MM-DD (ddd)', { locales: 'en-US' })
-})
 </script>
 
 <template>
