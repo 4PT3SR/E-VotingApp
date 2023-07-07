@@ -10,6 +10,9 @@ const extractName = require('../helpers/extractName');
 // const sendMail = require('../utils/sendMail');
 const generateToken = require('../utils/genAuthToken');
 
+// --- Smart Contract Start
+const contract = require("../helpers/contract_connect");
+// --- Smart Contract End
 
 // @route                  POST /register
 // @description
@@ -55,6 +58,11 @@ exports.register = async (req, res, next) => {
       password: body.password
 
     }
+
+    //TODO: Contract.registerVoter() -> await
+    //wait for endpoint to finish execution before moving to next stage 
+    let contract_call = await contract();
+    await contract_call.registerVoter(studentInfo.matric_number, studentInfo.email);
 
 
     await User.create(studentInfo);
