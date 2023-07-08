@@ -10,6 +10,7 @@ const auth = async (req, res, next) => {
             throw new AppError('No auth token', 401);
         }
         authToken = authToken.replace('Bearer ', '')
+
         let payload = jwt.verify(authToken, process.env.jwt_secret);
 
         let user = await User.findById(payload.userId);

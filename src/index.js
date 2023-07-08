@@ -22,7 +22,9 @@ const globalErrorHandler = require('./controllers/globalErrorHandler');
 // routes
 const userRouter = require('./routes/userRoute');
 const electionRouter = require('./routes/electionRoute');
-const testRouter = require('./routes/testRoute')
+const adminRouter = require('./routes/adminRoute');
+const testRouter = require('./routes/testRoute');
+const dataRouter = require('./routes/dataRoute')
 // const postRouter = require('./routes/postRoute');
 // const commentRouter = require('./routes/commentRoute');
 // const paymentRouter = require('./routes/paymentRoute');
@@ -42,9 +44,11 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 // cors config
 
-app.use('/api/test', testRouter)
 app.use('/api/user', userRouter);
 app.use('/api/election', electionRouter);
+app.use('/api/admin', adminRouter)
+app.use('/api/test', testRouter);
+app.use('/api/data', dataRouter);
 // app.use('/api/post',postRouter);
 // app.use('/api/',commentRouter);
 // app.use('/api/',paymentRouter);

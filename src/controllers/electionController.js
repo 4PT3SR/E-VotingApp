@@ -186,6 +186,7 @@ exports.getAllElections = async (req, res, next) => {
     let query;
     let currentDate = new Date();
 
+<<<<<<< HEAD
     switch (status) {
       case "active":
         query = Election.find({}).where('start').lt(currentDate).where('end').gt(currentDate);
@@ -198,6 +199,43 @@ exports.getAllElections = async (req, res, next) => {
         break;
       default:
         query = Election.find({})
+=======
+        switch (status) {
+            case "active":
+                query = Election.find({}).where('start').lt(currentDate).where('end').gt(currentDate);
+                break;
+            case "upcoming":
+                query = Election.find({}).where('start').gt(currentDate);
+                break;
+            case "inactive":
+                query = Election.find({}).where('end').lt(currentDate);
+                break;
+            default:
+                query = Election.find({})
+
+        }
+
+        //Pagination
+        const page = req.query.page * 1 || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        query = query.skip(skip).limit(limit);
+
+        if (req.query.page) {
+            const numElections = await Election.countDocuments();
+            if (skip >= numElections) throw new AppError('This page does not exist', 404);
+        }
+
+        let elections = await query;
+
+        res.status(200).json({
+            message: 'Success',
+            data: elections
+        });
+    } catch (error) {
+        next(error)
+>>>>>>> 06a09e8 (admins can give or remove admin roles on users, data route- to get sets of data stored prior using the same route)
     }
 
     //Pagination
