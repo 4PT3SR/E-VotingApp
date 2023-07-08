@@ -10,6 +10,11 @@ contract EVoting is Ownable {
 
     // Counters.Counter private electionId;
     // Counters.Counter private candidateId;
+<<<<<<< HEAD
+=======
+
+    uint256 public number;
+>>>>>>> 5026301 (update)
 
     // user hash => bool: true = whitelisted, false = not whitelisted (can't vote)
     mapping(bytes32 => bool) public isWhitelisted;

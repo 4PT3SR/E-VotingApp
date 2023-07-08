@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const { const {
+=======
+const {
+>>>>>>> 5026301 (update)
   electionSchema,
   postSchema,
   candidateSchema
@@ -30,6 +34,10 @@ exports.createElection = async (req, res, next) => {
 
     //TODO: Call Contract.CreateElection() here and await execution
     let contract_call = await contract();
+<<<<<<< HEAD
+=======
+    console.log(election.title);
+>>>>>>> 5026301 (update)
     await contract_call.createElection(election._id, election.title, toEpoch(election.start), toEpoch(election.end), indexOf(election.election_type))
 
     res.status(200).json({
@@ -114,12 +122,22 @@ exports.createCandidate = async (req, res, next) => {
       throw new AppError('Election not found', 400)
     }
 
+<<<<<<< HEAD
     post.save();
 
     //TODO: Contract.registerCandidate()
     let contract_call = await contract();
     await contract_call.registerCandidate(post.election, candidate._id, candidate.fullname, post._id, indexOf(query.election_type));
 
+=======
+    //TODO: Contract.registerCandidate() -> await
+    let contract_call = await contract();
+    await contract_call.registerCandidate(post.election, candidate._id, candidate.fullname, post._id, indexOf(query.election_type));
+
+    post.save();
+
+
+>>>>>>> 5026301 (update)
     res.status(201).json({
       message: 'Success',
       data: candidate
@@ -153,7 +171,12 @@ exports.vote = async (req, res, next) => {
 
       //TODO: Contract.CastVote() -> await
       let contract_call = await contract();
+<<<<<<< HEAD
       await contract_call.castVote(post.election, candidate._id, candidate.fullname, post._id, req.user.matric_number, req.user.email);
+=======
+      //FIX: Pass matno and email to castVote as last arguments respectively
+      await contract_call.castVote(post.election, candidate._id, candidate.fullname, post._id,);
+>>>>>>> 5026301 (update)
 
     }
 
@@ -187,6 +210,9 @@ exports.getAllElections = async (req, res, next) => {
     let currentDate = new Date();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5026301 (update)
     switch (status) {
       case "active":
         query = Election.find({}).where('start').lt(currentDate).where('end').gt(currentDate);
@@ -199,6 +225,7 @@ exports.getAllElections = async (req, res, next) => {
         break;
       default:
         query = Election.find({})
+<<<<<<< HEAD
 =======
         switch (status) {
             case "active":
@@ -236,6 +263,8 @@ exports.getAllElections = async (req, res, next) => {
     } catch (error) {
         next(error)
 >>>>>>> 06a09e8 (admins can give or remove admin roles on users, data route- to get sets of data stored prior using the same route)
+=======
+>>>>>>> 5026301 (update)
     }
 
     //Pagination
