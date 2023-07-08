@@ -31,11 +31,13 @@ const electionSchema = Joi.object({
   election_type: Joi.string().valid('College', 'Department', 'General').required(),
   college_eligibility: Joi.when('election_type', {
     is: 'College',
-    then: Joi.string().required()
+    then: Joi.string().required(),
+    otherwise: Joi.any().forbidden()
   }),
   department_eligibility: Joi.when('election_type', {
     is: 'Department',
-    then: Joi.string().required()
+    then: Joi.string().required(),
+    otherwise: Joi.any().forbidden()
   }),
 });
 // department_eligibility: Joi.array().items(Joi.string()),
