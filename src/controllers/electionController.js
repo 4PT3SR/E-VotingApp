@@ -1,4 +1,4 @@
-const {
+const { const {
   electionSchema,
   postSchema,
   candidateSchema
@@ -198,7 +198,6 @@ exports.getAllElections = async (req, res, next) => {
         break;
       default:
         query = Election.find({})
-
     }
 
     //Pagination
@@ -212,8 +211,8 @@ exports.getAllElections = async (req, res, next) => {
       const numElections = await Election.countDocuments();
       if (skip >= numElections) throw new AppError('This page does not exist', 404);
     }
-    // need to add filter for active ones
-    let elections = await query;;
+
+    let elections = await query;
 
     res.status(200).json({
       message: 'Success',
@@ -222,7 +221,6 @@ exports.getAllElections = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-
 }
 
 exports.getElection = async (req, res, next) => {
@@ -255,6 +253,30 @@ exports.getElection = async (req, res, next) => {
     res.status(200).json({
       status: 'Success',
       data: election
+    });
+
+  } catch (error) {
+    next(error)
+  }
+
+}
+
+exports.getPost = async (req, res, next) => {
+  try {
+    const postId = req.params.id;
+    const query = Post.findById(postId);
+
+    if (!query) {
+      throw new AppError("Post not found", 400);
+    }
+
+    const post = await query.populate([{
+      path: 'candidates'
+    }])
+
+    res.status(200).json({
+      status: 'Success',
+      data: post
     });
 
   } catch (error) {
