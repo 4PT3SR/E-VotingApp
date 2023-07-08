@@ -122,6 +122,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core')['useAsyncQueue']
   const useAsyncState: typeof import('@vueuse/core')['useAsyncState']
   const useAttrs: typeof import('vue')['useAttrs']
+  const useAxiosInstance: typeof import('./composables/useAxiosInstance')['useAxiosInstance']
   const useBase64: typeof import('@vueuse/core')['useBase64']
   const useBaseFetch: typeof import('./composables/fetch')['useBaseFetch']
   const useBattery: typeof import('@vueuse/core')['useBattery']
@@ -412,6 +413,7 @@ declare module 'vue' {
     readonly useAsyncQueue: UnwrapRef<typeof import('@vueuse/core')['useAsyncQueue']>
     readonly useAsyncState: UnwrapRef<typeof import('@vueuse/core')['useAsyncState']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useAxiosInstance: UnwrapRef<typeof import('./composables/useAxiosInstance')['useAxiosInstance']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBaseFetch: UnwrapRef<typeof import('./composables/fetch')['useBaseFetch']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>
@@ -694,6 +696,7 @@ declare module '@vue/runtime-core' {
     readonly useAsyncQueue: UnwrapRef<typeof import('@vueuse/core')['useAsyncQueue']>
     readonly useAsyncState: UnwrapRef<typeof import('@vueuse/core')['useAsyncState']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useAxiosInstance: UnwrapRef<typeof import('./composables/useAxiosInstance')['useAxiosInstance']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBaseFetch: UnwrapRef<typeof import('./composables/fetch')['useBaseFetch']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>

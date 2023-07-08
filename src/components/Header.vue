@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import { userStore } from '~/store/user';
+
 const route = useRoute()
 const router = useRouter()
+const user = userStore()
 const goBack = () => {
   router.go(-1)
+}
+
+const logout = () => {
+  user.$reset()
 }
 </script>
 
@@ -16,7 +23,9 @@ const goBack = () => {
         <ul class="flex flex-1 items-center justify-center gap-3">
           <li><RouterLink to="/" class="hover:bg-blue-50 text-base px-2.5 py-1.5 rounded-lg select-none">Home</RouterLink></li>
         </ul>
-        <div class="flex-1" />
+        <div class="flex flex-1 justify-end">
+          <button type="button" class="text-sm" @click="logout()">Logout</button>
+        </div>
       </div>
     </nav>
   </header>
