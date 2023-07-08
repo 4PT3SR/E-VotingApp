@@ -30,7 +30,6 @@ exports.createElection = async (req, res, next) => {
 
     //TODO: Call Contract.CreateElection() here and await execution
     let contract_call = await contract();
-    console.log(election.title);
     await contract_call.createElection(election._id, election.title, toEpoch(election.start), toEpoch(election.end), indexOf(election.election_type))
 
     res.status(200).json({
@@ -115,12 +114,11 @@ exports.createCandidate = async (req, res, next) => {
       throw new AppError('Election not found', 400)
     }
 
-    //TODO: Contract.registerCandidate() -> await
-    let contract_call = await contract();
-    await contract_call.registerCandidate(post.election, candidate._id, candidate.fullname, post._id, indexOf(query.election_type));
-
     post.save();
 
+    //TODO: Contract.registerCandidate()
+    let contract_call = await contract();
+    await contract_call.registerCandidate(post.election, candidate._id, candidate.fullname, post._id, indexOf(query.election_type));
 
     res.status(201).json({
       message: 'Success',
@@ -155,8 +153,7 @@ exports.vote = async (req, res, next) => {
 
       //TODO: Contract.CastVote() -> await
       let contract_call = await contract();
-      //FIX: Pass matno and email to castVote as last arguments respectively
-      await contract_call.castVote(post.election, candidate._id, candidate.fullname, post._id,);
+      await contract_call.castVote(post.election, candidate._id, candidate.fullname, post._id, req.user.matric_number, req.user.email);
 
     }
 
