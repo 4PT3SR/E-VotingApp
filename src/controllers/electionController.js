@@ -179,8 +179,8 @@ exports.getAllElections = async (req, res, next) => {
             const numElections = await Election.countDocuments();
             if (skip >= numElections) throw new AppError('This page does not exist', 404);
         }
-        // need to add filter for active ones
-        let elections = await query;;
+
+        let elections = await query;
 
         res.status(200).json({
             message: 'Success',

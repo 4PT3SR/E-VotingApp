@@ -49,15 +49,20 @@ const postSchema = Joi.object({
 
 const candidateSchema = Joi.object({
   fullname: Joi.string().required(),
-
 })
+
+const dataSchema = Joi.object({
+  title: Joi.string().required().uppercase(),
+  data: Joi.array().items(Joi.string().required()).required()
+});
 
 module.exports = {
   registerSchema,
   loginSchema,
   electionSchema,
   postSchema,
-  candidateSchema
+  candidateSchema,
+  dataSchema
 };
 
 

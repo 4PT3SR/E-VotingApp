@@ -24,6 +24,18 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: [true, 'Email already registered']
     },
+    level: {
+        type: Number,
+        required: true
+    },
+    faculty: {
+        type: String,
+        required: true
+    },
+    department: {
+        type: String,
+        required: true
+    },
     role: {
         type: String,
         enum: ['USER', 'ADMIN'],
@@ -36,6 +48,8 @@ const userSchema = new mongoose.Schema({
             validator: function () {
                 if (this.role === 'ADMIN') {
                     this.isAdmin = true
+                } else {
+                    this.isAdmin = false
                 }
             }
         }
@@ -61,6 +75,7 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// for password encryption
 userSchema.pre('save', async function (next) {
     const user = this;
     if (user.isModified('password')) {
@@ -68,6 +83,15 @@ userSchema.pre('save', async function (next) {
     }
     next()
 })
+
+// validation for user or admin
+// userSchema.pre('save', function (next) {
+//     const user = this;
+//     if (user.isModified('role')) {
+//         user.isAdmin = !user.isAdmin;
+//     }
+//     next()
+// })
 
 userSchema.statics.getCredentials = async function (matric_number, password) {
 
