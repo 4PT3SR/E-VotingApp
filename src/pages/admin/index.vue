@@ -49,7 +49,7 @@ onMounted(async() => {
             <div v-else class="border border-[#EAECF0] rounded-lg shadow-none lg:shadow-md">
                 <div class="flex w-full items-center justify-between px-6 py-4 border-b border-b-[#EAECF0]">
                     <h1 class="font-medium text-lg text-gray-900">Users</h1>
-                    <Button label="Add user" rounded size="small" />
+                    <!-- <Button label="Add user" rounded size="small" /> -->
                 </div>
                 <div class="lg:w-full lg:left-auto lg:relative lg:right-auto lg:overflow-x-hidden left-0 right-0 overflow-x-scroll">
                     <table class="table-auto w-full">

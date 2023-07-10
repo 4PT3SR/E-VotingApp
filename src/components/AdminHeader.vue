@@ -22,7 +22,8 @@ const logout = () => {
           <button v-if="route.fullPath != '/admin'" type="button" class="text-sm" @click="goBack()">Back</button>
         </div>
         <ul class="flex flex-1 items-center justify-center gap-3">
-          <li><RouterLink to="/admin" class="hover:bg-blue-50 text-base px-2.5 py-1.5 rounded-lg select-none">Home</RouterLink></li>
+          <li><RouterLink to="/admin" class="hover:bg-gray-50 text-base text-gray-700 font-semibold px-3 py-2 rounded-lg select-none">Home</RouterLink></li>
+          <li><RouterLink to="/admin/elections" class="hover:bg-gray-50 text-base text-gray-700 font-semibold px-3 py-2 rounded-lg select-none">Elections</RouterLink></li>
         </ul>
         <div class="flex flex-1 justify-end">
           <button type="button" class="text-sm" @click="logout()">Logout</button>
@@ -34,6 +35,6 @@ const logout = () => {
 
 <style scoped>
 .router-link-active {
-  @apply text-blue-600;
+  @apply hover:bg-blue-50 text-blue-600;
 }
 </style>
