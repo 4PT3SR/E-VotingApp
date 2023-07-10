@@ -3,6 +3,10 @@ const {
     postSchema,
     candidateSchema
 } = require('../utils/joiValidation');
+const {
+    checkIfCanAddCandidate,
+    checkIfCanAddPost
+} = require('../utils/editElection')
 // const User = require('../models/userModel')
 const Post = require('../models/postModel')
 const Candidate = require('../models/candidateModel');
@@ -42,7 +46,31 @@ exports.createPost = async (req, res, next) => {
         if (!election) {
             throw new AppError('Oops..Election does not exist', 400);
         }
+        // checkIfCanAddPost(election, next);
+
+        //Check if election is active or ended and rebuke all edit
+        // console.log(!(election.start > Date.now()))
+        if (!(election.start > Date.now())) {
+            throw new AppError('Cannot add a post while election is ongong or has ended', 400)
+        }
+
         const payload = await postSchema.validateAsync(req.body);
+
+        //is election onGoing
+
+
+        //check if post does not already exist
+        const existingPost = await Post.find({
+            title: {
+                $regex: payload.title,
+                $options: "i"
+            }
+        }).where('election').equals(relatedElection);
+        if (existingPost.length > 0) {
+            throw new AppError('Post already exists', 400);
+        }
+
+
         const post = new Post({
             ...payload,
             election: relatedElection
@@ -78,7 +106,24 @@ exports.createCandidate = async (req, res, next) => {
         if (!post) {
             throw new AppError('Oops..Post does not exist', 400);
         }
+        // Checks if an election is going on or has eneded an prevents candidates to be added if election is ongoing or has ended
+        // checkIfCanAddCandidate(Election, post.election, next);
+        const election = await Election.findById(post.election);
+        if (!(election.start > Date.now())) {
+            throw new AppError('Cannot add a candidate while election is ongong or has ended', 400)
+        }
         const payload = await candidateSchema.validateAsync(req.body);
+
+        //check if candidate does not already exist
+        const existingCandidate = await Candidate.find({
+            name: {
+                $regex: payload.fullname,
+                $options: "i"
+            }
+        }).where('post').equals(relatedPost);
+        if (existingCandidate.length > 0) {
+            throw new AppError('Candidate already exists', 400);
+        }
 
         const candidate = await new Candidate({
             ...payload,
