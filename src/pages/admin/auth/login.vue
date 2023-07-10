@@ -39,9 +39,8 @@ onRegisterResponse(async () => {
     user: obj,
     token: token.value.authToken
   })
-  router.push('/')
   resetForm()
-    
+  router.push('/admin')
 })
 
 onRegisterError(async () => {

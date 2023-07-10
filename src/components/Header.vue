@@ -10,6 +10,7 @@ const goBack = () => {
 
 const logout = () => {
   user.$reset()
+  router.push('/auth/login')
 }
 </script>
 
