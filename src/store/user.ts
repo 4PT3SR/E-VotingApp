@@ -1,16 +1,5 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-
-interface User {
-    _id: string
-    first_name: string
-    last_name: string
-    matric_number: string
-    email: string
-    role: string
-    isAdmin: boolean
-    posts: any[]
-    tokens: any[]
-}
+import type { User } from "~/types/user";
 
 export const userStore = defineStore('user', {
     state: () => ({
