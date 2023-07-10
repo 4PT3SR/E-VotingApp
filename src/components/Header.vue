@@ -16,7 +16,7 @@ const logout = () => {
 
 <template>
   <header class="border-b border-b-gray-300 shadow-sm">
-    <nav class="py-3 px-5 lg:px-0 container max-w-screen-xl mx-auto">
+    <nav class="py-3 px-4 lg:px-0 container max-w-screen-xl mx-auto">
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <button v-if="route.fullPath != '/'" type="button" class="text-sm" @click="goBack()">Back</button>

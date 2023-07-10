@@ -44,7 +44,7 @@ onMounted(async() => {
 
 <template>
     <section class="pt-6 h-full">
-        <div class="max-w-screen-xl px-5 lg:px-0 mx-auto h-full">
+        <div class="max-w-screen-xl px-4 lg:px-0 mx-auto h-full">
             <Loader v-if="isFetching" />
             <div v-else class="border border-[#EAECF0] rounded-lg shadow-none lg:shadow-md">
                 <div class="flex w-full items-center justify-between px-6 py-4 border-b border-b-[#EAECF0]">

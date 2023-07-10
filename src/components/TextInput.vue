@@ -18,6 +18,7 @@ const handleInputChange = (event: Event) => (event.target as HTMLInputElement).v
     <div class="border-none p-0 relative grid gap-1">
         <label class="e-label">{{ label }}</label>
         <input v-bind="$attrs" :value="modelValue" @change="baseInputEmits('update:modelValue', handleInputChange($event))" class="e-input" />
+        <span v-if="error" class="text-sm text-red-600">{{ error }}</span>
     </div>
 </template>
 

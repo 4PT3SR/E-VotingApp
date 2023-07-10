@@ -5,6 +5,7 @@ import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import { HeadlessUiResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,11 +24,12 @@ export default defineConfig({
         'vue-router',
         // '@vueuse/head',
         '@vueuse/core',
+        'vee-validate',
       ],
       dts: 'src/auto-imports.d.ts',
       dirs: [
         'src/composables',
-        // 'src/store',
+        'src/store',
       ],
       vueTemplate: true,
     }),
@@ -37,6 +39,12 @@ export default defineConfig({
 
       // allow auto import and register components used in markdown
       include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+
+      // custom resolvers
+      resolvers: [
+        HeadlessUiResolver({ prefix: '' }),
+        // auto import icons
+      ],
 
       dts: 'src/components.d.ts',
     }),

@@ -37,7 +37,7 @@ watch(newUrl, async() => {
 
 <template>
   <section class="pt-6 h-full">
-    <div class="max-w-screen-xl px-5 lg:px-0 mx-auto h-full">
+    <div class="max-w-screen-xl px-4 lg:px-0 mx-auto h-full">
       <div class="grid gap-4">
         <div class="flex items-center justify-center gap-3">
           <button v-for="status in statuses" :key="status.name" type="button" :class="`flex px-4 py-2 rounded-full text-sm hover:text-blue-600 ${url === status.value ? 'text-blue-600 bg-blue-50 border border-blue-500' : 'text-gray-600'}`" @click="setUrl(status.value)">{{ status.name }}</button>

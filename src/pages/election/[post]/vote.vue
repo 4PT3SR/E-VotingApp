@@ -23,7 +23,7 @@ onMounted(() => {
 
 <template>
     <section class="pt-6 h-full">
-        <div class="max-w-screen-xl px-5 lg:px-0 mx-auto h-full">
+        <div class="max-w-screen-xl px-4 lg:px-0 mx-auto h-full">
             <Loader v-if="isFetching" />
             <div v-else class="grid">
                 <h1 class="text-center text-xl text-gray-900 font-semibold">{{ post?.title }}</h1>
