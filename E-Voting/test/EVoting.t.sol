@@ -28,14 +28,22 @@ contract EVotingTest is Test {
     function testCreateElection() public {
         startHoax(address(1));
 
+        string memory electionId = "1";
         string memory _title = "SUG Election";
         uint256 _start = 1687303489000;
         uint256 _end = 1687307089000;
         uint8 _electionType = 2;
 
-        evotingCore.createElection(_title, _start, _end, _electionType);
+        evotingCore.createElection(
+            electionId,
+            _title,
+            _start,
+            _end,
+            _electionType
+        );
 
-        (string memory title, , , , ) = evotingCore.Elections(1);
+        bytes32 bElectionId = keccak256(abi.encodePacked(electionId));
+        (string memory title, , , , ) = evotingCore.Elections(bElectionId);
         // console.log("Title:", title);
         // console.log("Timestamp:", block.timestamp);
 
@@ -52,22 +60,24 @@ contract EVotingTest is Test {
 
         startHoax(address(1));
 
-        uint256 _electionId = 1;
+        string memory _electionId = "1";
+        string memory _candidateId = "1";
         string memory _candidateName = "John Doe";
         string memory _post = "Presidential";
         uint8 _electionType = 2;
 
         evotingCore.registerCandidate(
             _electionId,
+            _candidateId,
             _candidateName,
             _post,
             _electionType
         );
 
         (, string memory candidateName, , , ) = evotingCore.CandidateStats(
-            1,
+            keccak256(abi.encodePacked(_electionId)),
             keccak256(abi.encodePacked(_post)),
-            0
+            keccak256(abi.encodePacked(_candidateId))
         );
         assertTrue(
             keccak256(abi.encodePacked(candidateName)) ==
@@ -82,22 +92,24 @@ contract EVotingTest is Test {
 
         startHoax(address(1));
 
-        uint256 _electionId = 1;
+        string memory _electionId = "1";
+        string memory _candidateId = "2";
         string memory _candidateName = "Jane Doe";
         string memory _post = "Presidential";
         uint8 _electionType = 2;
 
         evotingCore.registerCandidate(
             _electionId,
+            _candidateId,
             _candidateName,
             _post,
             _electionType
         );
 
         (, string memory candidateName, , , ) = evotingCore.CandidateStats(
-            1,
+            keccak256(abi.encodePacked(_electionId)),
             keccak256(abi.encodePacked(_post)),
-            1
+            keccak256(abi.encodePacked(_candidateId))
         );
         assertTrue(
             keccak256(abi.encodePacked(candidateName)) ==
@@ -112,7 +124,8 @@ contract EVotingTest is Test {
 
         startHoax(address(1));
 
-        uint256 _electionId = 1;
+        string memory _electionId = "1";
+        string memory _candidateId = "2";
         string memory _candidateName = "Jane Doe";
         string memory _post = "Presidential";
         uint8 _electionType = 2;
@@ -120,6 +133,7 @@ contract EVotingTest is Test {
         vm.expectRevert("EVoting: Candidate already registered!");
         evotingCore.registerCandidate(
             _electionId,
+            _candidateId,
             _candidateName,
             _post,
             _electionType
@@ -146,8 +160,8 @@ contract EVotingTest is Test {
 
         startHoax(address(1));
 
-        uint256 _electionId = 1;
-        uint256 _candidateId = 1;
+        string memory _electionId = "1";
+        string memory _candidateId = "1";
         string memory _candidateName = "John Doe";
         string memory _post = "Presidential";
         string memory _matNo = "U19CS2023";
@@ -164,10 +178,16 @@ contract EVotingTest is Test {
 
         vm.stopPrank();
 
+        // (, , , uint256 johnVotes, ) = evotingCore.CandidateStats(
+        //     1,
+        //     keccak256(abi.encodePacked(_post)),
+        //     0
+        // );
+
         (, , , uint256 johnVotes, ) = evotingCore.CandidateStats(
-            1,
+            keccak256(abi.encodePacked(_electionId)),
             keccak256(abi.encodePacked(_post)),
-            0
+            keccak256(abi.encodePacked(_candidateId))
         );
         assertTrue(johnVotes == 1);
     }
@@ -179,8 +199,8 @@ contract EVotingTest is Test {
 
         vm.expectRevert("EVoting: Not whitelisted!");
         evotingCore.castVote(
-            1,
-            1,
+            "1",
+            "1",
             "John Doe",
             "Presidential",
             "U19CS2023",
@@ -197,8 +217,8 @@ contract EVotingTest is Test {
 
         vm.expectRevert("EVoting: User already voted!");
         evotingCore.castVote(
-            1,
-            2,
+            "1",
+            "2",
             "Jane Doe",
             "Presidential",
             "U19CS2023",
@@ -211,7 +231,7 @@ contract EVotingTest is Test {
         testCastVote();
 
         EVoting.Candidate[] memory candidates = evotingCore.getVotesByElection(
-            1,
+            "1",
             "Presidential"
         );
 

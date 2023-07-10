@@ -33,6 +33,7 @@
     "puppeteer": "^20.4.0"
   },
   "devDependencies": {
+    "ethers": "^6.6.1",
     "nodemon": "^2.0.19"
   }
 }
