@@ -7,6 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminHeader: typeof import('./components/AdminHeader.vue')['default']
+    Badge: typeof import('./components/Badge.vue')['default']
     Button: typeof import('./components/Button.vue')['default']
     Header: typeof import('./components/Header.vue')['default']
     Loader: typeof import('./components/Loader.vue')['default']
