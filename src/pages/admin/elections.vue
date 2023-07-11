@@ -31,6 +31,7 @@ const { value: start } = useField<string>('start')
 const { value: end } = useField<string>('end')
 
 const submitForm = handleSubmit(async (values: any) => {
+    console.log(values)
     // await registerUser(values).execute()
 })
 

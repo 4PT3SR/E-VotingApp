@@ -33,7 +33,8 @@ const submitForm = handleSubmit(async (values: any) => {
     await registerUser(values).execute()
 })
 
-onRegisterResponse(async () => {
+onRegisterResponse(async (response) => {
+  console.log(response)
   const { __v, createdAt, updatedAt, ...obj } = token.value.user
   user.$patch({
     user: obj,
