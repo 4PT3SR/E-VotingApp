@@ -2,20 +2,43 @@
 import * as yup from 'yup';
 import { useAxiosInstance } from '~/composables/useAxiosInstance';
 import type { FullElection } from '~/types/election';
-import { useTimeAgo } from '@vueuse/core';
+import { useTimeAgo, useNow } from '@vueuse/core';
 
+const now = useNow()
 const api = useAxiosInstance()
 const isFetching = ref(false)
 const isOpen = ref(false)
 const elections = ref<FullElection[]>([])
-const types = ['general', 'department', 'college']
+const types = ['General', 'Department', 'College']
 
-const { handleSubmit, resetForm, errors } = useForm({
+const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   validationSchema: yup.object({
     title: yup.string().required('Please enter the election title'),
     election_type: yup.string().required('Please select the election type'),
-    start: yup.string().required('Please select a start time'),
-    end: yup.string().required('Please select an end time'),
+    start: yup.date().required('Please select a start time').test(
+        'is-valid-time',
+        'Start time must be at least 1hr ahead from now',
+        (value) => {
+            if (new Date(value) >= now.value) {
+                let myStart = new Date(value)
+                let myNow = new Date(now.value)
+                let diff = myStart.getTime() - myNow.getTime()
+                let hrs = diff / (1000 * 60 * 60)
+                if (hrs >= 1) {
+                   return true; 
+                }
+            }
+        }
+    ),
+    end: yup.date().required('Please select an end time').test(
+        'is-valid-end',
+        'End time must be greater than start time',
+        (value) => {
+            if (new Date(value) > new Date(start.value)) {
+                return true;
+            }
+        }
+    ),
   }),
   initialValues: {
     title: '',
@@ -31,8 +54,12 @@ const { value: start } = useField<string>('start')
 const { value: end } = useField<string>('end')
 
 const submitForm = handleSubmit(async (values: any) => {
-    console.log(values)
-    // await registerUser(values).execute()
+    await api.value.post('/election', values).then(() => {
+        fetchElections()
+        closeModal()
+    }).catch((err) => {
+        console.error(err)
+    })
 })
 
 const fetchElections = async() => {
@@ -111,8 +138,8 @@ onMounted(async () => {
                     <TextInput label="End time" name="end" type="datetime-local" v-model="end" :error="errors.end" />
                 </div>
                 <div class="flex items-center gap-2">
-                    <Button label="Create" type="submit" block />
-                    <Button label="Cancel" inverted block @click="[resetForm(), closeModal()]" />
+                    <Button label="Create" type="submit" block :loading="isSubmitting" />
+                    <Button label="Cancel" inverted block :disabled="isSubmitting" @click="[resetForm(), closeModal()]" />
                 </div>
             </form>
         </Modal>
