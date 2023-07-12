@@ -9,18 +9,23 @@ const api = useAxiosInstance()
 const isFetching = ref(false)
 const isOpen = ref(false)
 const fetchingCollege = ref(false)
+const fetchingDepartment = ref(false)
+const apiError = ref('')
 const elections = ref<FullElection[]>([])
 const types = ref<string[]>(['General', 'Department', 'College'])
 const colleges = ref([])
+const departments = ref([])
 const filteredColleges = computed(() => {
     return colleges.value.map((college:any) => college?.data[0])
+})
+const filteredDepartments = computed(() => {
+    return departments.value.map((department:any) => department?.data[0])
 })
 
 const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   validationSchema: yup.object({
     title: yup.string().required('Please enter the election title'),
     election_type: yup.string().required('Please select the election type'),
-    department: yup.string().required('You must select a department'),
     start: yup.string().required('Please select a start time').test(
         'is-valid-time',
         'Start time must be at least 1hr ahead from now',
@@ -49,8 +54,8 @@ const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   initialValues: {
     title: '',
     election_type: '',
-    college: '',
-    department: '',
+    college_eligibility: '',
+    department_eligibility: '',
     start: '',
     end: '',
   },
@@ -58,17 +63,29 @@ const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
 
 const { value: title } = useField<string>('title')
 const { value: type } = useField<string>('election_type')
-const { value: college } = useField<string>('college')
-const { value: department } = useField<string>('department')
+const { value: college } = useField<string>('college_eligibility')
+const { value: department } = useField<string>('department_eligibility')
 const { value: start } = useField<string>('start')
 const { value: end } = useField<string>('end')
 
 const submitForm = handleSubmit(async (values: any) => {
-    await api.value.post('/election', values).then(() => {
+    let newValues;
+    if (values.election_type === types.value[0]) {
+        const { college_eligibility, department_eligibility, ...rest } = values
+        newValues = {...rest}
+    } else if (values.election_type === types.value[1]) {
+        const { college_eligibility, ...rest } = values
+        newValues = {...rest}
+    } else {
+        const { department_eligibility, ...rest } = values
+        newValues = {...rest}
+    }
+    await api.value.post('/election', newValues).then(() => {
         fetchElections()
         closeModal()
     }).catch((err) => {
         console.error(err)
+        apiError.value = err.response.data.message
     })
 })
 
@@ -90,6 +107,16 @@ const fetchColleges = async () => {
     fetchingCollege.value = false
 }
 
+const fetchDepartments = async () => {
+    fetchingDepartment.value = true
+    await api.value.get('/data/department').then((res) => {
+        departments.value = res.data.data
+    }).catch((err) => {
+        console.error(err)
+    })
+    fetchingDepartment.value = false
+}
+
 const openModal = () => {
     isOpen.value = true
 }
@@ -107,6 +134,8 @@ onMounted(async () => {
 watch(type, () => {
     if (type.value === types.value[2]) {
         fetchColleges()
+    } else if (type.value === types.value[1]) {
+        fetchDepartments()
     }
 })
 </script>
@@ -160,10 +189,10 @@ watch(type, () => {
                 <TextInput label="Election Title" name="title" type="text" v-model="title" :error="errors.title" />
                 <Select v-model="type" :options="types" name="type" :error="errors.election_type" label="Type of election" />
                 <template v-if="type == 'College'">
-                    <Select v-model="college" :options="filteredColleges" name="college" :error="errors.college" :disabled="fetchingCollege" label="College" />
+                    <Select v-model="college" :options="filteredColleges" name="college" :error="errors.college_eligibility" :disabled="fetchingCollege" label="College" />
                 </template>
                 <template v-if="type == 'Department'">
-                    <Select v-model="department" :options="[]" name="department" :error="errors.department" label="Department" />
+                    <Select v-model="department" :options="filteredDepartments" name="department" :error="errors.department_eligibility" :disabled="fetchingDepartment" label="Department" />
                 </template>
                 <div class="flex items-start gap-2">
                     <TextInput label="Start time" name="start" type="datetime-local" v-model="start" :error="errors.start" />
@@ -174,6 +203,7 @@ watch(type, () => {
                     <Button label="Cancel" inverted block :disabled="isSubmitting" @click="[resetForm(), closeModal()]" />
                 </div>
             </form>
+            <p v-if="apiError" class="text-red-600 font-medium text-sm">{{ apiError }}</p>
         </Modal>
     </section>
 </template>
