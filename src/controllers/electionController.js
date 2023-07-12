@@ -159,7 +159,7 @@ exports.createCandidate = async (req, res, next) => {
             throw new AppError('Election not found', 400)
         }
 
-        // Chechkkkkkk
+
 
         //TODO: Contract.registerCandidate() -> await
         let contract_call = await contract();
@@ -291,13 +291,13 @@ exports.getElection = async (req, res, next) => {
 
 
         //TODO: GetVotesByElection: Gets all candidate data and votes by election and posts
-        let contract_call = await contract();
+        // let contract_call = await contract();
         //TODO: Iterate through the posts array to get each post's id. test case with only the first shown below
-        let post_id = query.posts[0];
-        let tx = await contract_call.GetVotesByElection(query._id, post_id);
+        // let post_id = query.posts[0];
+        // let tx = await contract_call.GetVotesByElection(query._id, post_id);
 
-        let result = tx.wait();
-        console.log(result);
+        // let result = tx.wait();
+        // console.log(result);
 
         res.status(200).json({
             status: 'Success',
