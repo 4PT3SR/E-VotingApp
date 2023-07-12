@@ -164,6 +164,7 @@ exports.createCandidate = async (req, res, next) => {
     await contract_call.registerCandidate(post.election, candidate._id, candidate.fullname, post._id, indexOf(query.election_type));
 
     post.save();
+    
     res.status(201).json({
       message: 'Success',
       data: candidate
@@ -350,4 +351,3 @@ exports.getPost = async (req, res, next) => {
     next(error)
   }
 }
-
