@@ -34,7 +34,7 @@ const classes = computed(() => ({
 
 <style scoped>
 .ks-select {
-    @apply w-full bg-transparent border-gray-300 focus:border-blue-600 focus:ring-blue-200 focus:ring-2 rounded-lg capitalize
+    @apply w-full bg-transparent border-gray-300 focus:border-blue-600 focus:ring-blue-200 focus:ring-2 rounded-lg capitalize disabled:bg-gray-100 disabled:cursor-not-allowed
 }
 
 .ks-select--outer {

@@ -8,14 +8,20 @@ const now = useNow()
 const api = useAxiosInstance()
 const isFetching = ref(false)
 const isOpen = ref(false)
+const fetchingCollege = ref(false)
 const elections = ref<FullElection[]>([])
 const types = ref<string[]>(['General', 'Department', 'College'])
+const colleges = ref([])
+const filteredColleges = computed(() => {
+    return colleges.value.map((college:any) => college?.data[0])
+})
 
 const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   validationSchema: yup.object({
     title: yup.string().required('Please enter the election title'),
     election_type: yup.string().required('Please select the election type'),
-    start: yup.date().required('Please select a start time').test(
+    department: yup.string().required('You must select a department'),
+    start: yup.string().required('Please select a start time').test(
         'is-valid-time',
         'Start time must be at least 1hr ahead from now',
         (value) => {
@@ -30,7 +36,7 @@ const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
             }
         }
     ),
-    end: yup.date().required('Please select an end time').test(
+    end: yup.string().required('Please select an end time').test(
         'is-valid-end',
         'End time must be greater than start time',
         (value) => {
@@ -43,7 +49,8 @@ const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   initialValues: {
     title: '',
     election_type: '',
-    type: '',
+    college: '',
+    department: '',
     start: '',
     end: '',
   },
@@ -51,6 +58,8 @@ const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
 
 const { value: title } = useField<string>('title')
 const { value: type } = useField<string>('election_type')
+const { value: college } = useField<string>('college')
+const { value: department } = useField<string>('department')
 const { value: start } = useField<string>('start')
 const { value: end } = useField<string>('end')
 
@@ -71,12 +80,14 @@ const fetchElections = async() => {
     })
 }
 
-const fetchColleges = async() => {
+const fetchColleges = async () => {
+    fetchingCollege.value = true
     await api.value.get('/data/colleges').then((res) => {
-        console.log(res.data.data)
+        colleges.value = res.data.data
     }).catch((err) => {
         console.error(err)
     })
+    fetchingCollege.value = false
 }
 
 const openModal = () => {
@@ -148,6 +159,12 @@ watch(type, () => {
             <form class="grid gap-4" @submit.prevent="submitForm">
                 <TextInput label="Election Title" name="title" type="text" v-model="title" :error="errors.title" />
                 <Select v-model="type" :options="types" name="type" :error="errors.election_type" label="Type of election" />
+                <template v-if="type == 'College'">
+                    <Select v-model="college" :options="filteredColleges" name="college" :error="errors.college" :disabled="fetchingCollege" label="College" />
+                </template>
+                <template v-if="type == 'Department'">
+                    <Select v-model="department" :options="[]" name="department" :error="errors.department" label="Department" />
+                </template>
                 <div class="flex items-start gap-2">
                     <TextInput label="Start time" name="start" type="datetime-local" v-model="start" :error="errors.start" />
                     <TextInput label="End time" name="end" type="datetime-local" v-model="end" :error="errors.end" />
