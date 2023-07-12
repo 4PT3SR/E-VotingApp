@@ -14,6 +14,7 @@ router.beforeEach(async (to, from) => {
     const user = userStore()
     const authRoutes = [
         "/auth/login",
+        "/auth/register",
         "/admin/auth/login"
     ]
 

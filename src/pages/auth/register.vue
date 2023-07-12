@@ -27,21 +27,21 @@ const {
     isFetching: isLoggingIn,
     onFetchResponse: onRegisterResponse,
     onFetchError: onRegisterError
-} = useBaseFetch<string>('/user/login', { immediate: false }).json()
+} = useBaseFetch<string>('/user/register', { immediate: false }).json()
 
 const submitForm = handleSubmit(async (values: any) => {
     await registerUser(values).execute()
 })
 
 onRegisterResponse(async () => {
-  const { __v, createdAt, updatedAt, ...obj } = token.value.user
-  user.$patch({
-    user: obj,
-    token: token.value.authToken
-  })
-  router.push('/')
-  resetForm()
-    
+//   const { __v, createdAt, updatedAt, ...obj } = token.value.user
+//   user.$patch({
+//     user: obj,
+//     token: token.value.authToken
+//   })
+//   router.push('/')
+//   resetForm()
+    console.log(token.value)
 })
 
 onRegisterError(async () => {
@@ -57,15 +57,15 @@ onRegisterError(async () => {
         <div class="grid content-center justify-items-center px-5 md:px-10 md:max-w-screen-sm w-full mx-auto">
             <form class="grid gap-8 w-full" @submit.prevent="submitForm">
                 <div class="grid gap-1">
-                    <h1 class="text-2xl text-gray-900 font-semibold">Log in</h1>
-                    <p class="text-base text-gray-600 font-normal">Enter your matriculation number and password to access your account.</p>
+                    <h1 class="text-2xl text-gray-900 font-semibold">Register</h1>
+                    <p class="text-base text-gray-600 font-normal">Enter your matriculation number and password to create your account.</p>
                 </div>
                 <div class="grid gap-5">
                     <TextInput v-model.trim="matricNumber" name="email" type="text" label="Matriculation number" />
                     <TextInput v-model.trim="password" name="password" type="password" label="Password" />
                     <div class="grid gap-2 justify-items-center">
-                      <Button type="submit" label="Log in" :loading="isLoggingIn" block />
-                      <p class="text-gray-600 text-base">Don't have an account? <RouterLink to="/auth/register" class="font-semibold text-blue-600">Register</RouterLink></p>
+                        <Button type="submit" label="Register" :loading="isLoggingIn" block />
+                        <p class="text-gray-600 text-base">Already have an account? <RouterLink to="/auth/login" class="font-semibold text-blue-600">Log in</RouterLink></p>
                     </div>
                 </div>
             </form>
