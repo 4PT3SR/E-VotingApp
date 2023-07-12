@@ -9,7 +9,7 @@ const api = useAxiosInstance()
 const isFetching = ref(false)
 const isOpen = ref(false)
 const elections = ref<FullElection[]>([])
-const types = ['General', 'Department', 'College']
+const types = ref<string[]>(['General', 'Department', 'College'])
 
 const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   validationSchema: yup.object({
@@ -43,6 +43,7 @@ const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   initialValues: {
     title: '',
     election_type: '',
+    type: '',
     start: '',
     end: '',
   },
@@ -70,6 +71,14 @@ const fetchElections = async() => {
     })
 }
 
+const fetchColleges = async() => {
+    await api.value.get('/data/colleges').then((res) => {
+        console.log(res.data.data)
+    }).catch((err) => {
+        console.error(err)
+    })
+}
+
 const openModal = () => {
     isOpen.value = true
 }
@@ -82,6 +91,12 @@ onMounted(async () => {
     isFetching.value = true
     await fetchElections()
     isFetching.value = false
+})
+
+watch(type, () => {
+    if (type.value === types.value[2]) {
+        fetchColleges()
+    }
 })
 </script>
 
