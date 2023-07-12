@@ -3,6 +3,7 @@ const {
   registerSchema,
   loginSchema
 } = require('../utils/joiValidation');
+const Data = require('../models/dataModel');
 const User = require('../models/userModel')
 const AppError = require('../utils/AppError');
 // const crypto = require('crypto');
@@ -58,6 +59,26 @@ exports.register = async (req, res, next) => {
       password: body.password
 
     }
+    //data for colleges and departments are already set before hand through the data route
+    const college = await Data.findOne({
+      title: 'colleges'
+    });
+    const department = await Data.findOne({
+      title: 'departments'
+    });
+    // console.log(college, college.data, department);
+    if (!college.data.includes(studentInfo.faculty)) {
+      college.data.push(studentInfo.faculty);
+      await college.save()
+    }
+
+    if (!department.data.includes(studentInfo.department)) {
+      department.data.push(studentInfo.department);
+      await department.save()
+    }
+
+
+
 
     //TODO: Contract.registerVoter() -> await
     //wait for endpoint to finish execution before moving to next stage 

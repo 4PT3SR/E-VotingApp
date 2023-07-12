@@ -11,6 +11,11 @@ const dataSchema = new mongoose.Schema({
         type: String,
         required: true
     }]
+    // ,
+    // tag: {
+    //     type: String,
+    //     default: null
+    // }
 
 }, {
     timestamps: true

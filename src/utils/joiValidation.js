@@ -54,8 +54,8 @@ const candidateSchema = Joi.object({
 })
 
 const dataSchema = Joi.object({
-  title: Joi.string().required().uppercase(),
-  data: Joi.array().items(Joi.string().required()).required()
+  title: Joi.string().required().lowercase(),
+  data: Joi.array().items(Joi.string()).required()
 });
 
 module.exports = {
