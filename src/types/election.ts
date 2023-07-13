@@ -30,6 +30,7 @@ export interface Post {
     title: string
     candidates: {
         _id: string
+        image?: string
         fullname: string
         votes: number
         post: string
