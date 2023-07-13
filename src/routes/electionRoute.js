@@ -15,7 +15,7 @@ const {
 } = require('../middleware/roleauth');
 const upload = require('../utils/multer')
 
-router.post('/', createElection);
+router.post('/', auth, isAdmin, createElection);
 router.post('/:id/post', auth, isAdmin, createPost);
 router.post('/posts/:id/candidate', auth, isAdmin, upload.single('image'), createCandidate);
 router.post('/:id/vote', auth, isStudent, vote);
