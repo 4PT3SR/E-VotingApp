@@ -34,13 +34,13 @@ const submitForm = handleSubmit(async (values: any) => {
 })
 
 onRegisterResponse(async () => {
-//   const { __v, createdAt, updatedAt, ...obj } = token.value.user
-//   user.$patch({
-//     user: obj,
-//     token: token.value.authToken
-//   })
-//   router.push('/')
-//   resetForm()
+  const { __v, createdAt, updatedAt, ...obj } = token.value.user
+  user.$patch({
+    user: obj,
+    token: token.value.authToken
+  })
+  router.push('/')
+  resetForm()
     console.log(token.value)
 })
 
