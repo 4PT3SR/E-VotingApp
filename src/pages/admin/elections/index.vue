@@ -166,11 +166,15 @@ watch(type, () => {
                             <tr v-for="election in elections" :key="election._id" class="even:bg-white odd:bg-gray-50 text-sm">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">{{ election.title }}</td>
                                 <td class="px-6 py-4 text-gray-600">{{ election.election_type }}</td>
-                                <td class="px-6 py-4 text-gray-600">{{ election.department_eligibility ?? '-' }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ election.department_eligibility ?? election.college_eligibility }}</td>
                                 <td class="px-6 py-4 text-gray-600">{{ election.posts.length }} {{ election.posts.length == 1 ? 'post' : 'posts' }}</td>
                                 <td class="px-6 py-4 text-gray-600 capitalize">{{ useTimeAgo(election.start).value }}</td>
                                 <td class="px-6 py-4 text-gray-600 capitalize">{{ useTimeAgo(election.end).value }}</td>
-                                <td class="px-6 py-4 text-gray-600"></td>
+                                <td class="px-6 py-4 text-gray-600">
+                                    <div class="flex items-center justify-end">
+                                        <RouterLink :to="`/admin/elections/${election._id}/posts`" class="text-sm font-semibold text-gray-700">View</RouterLink>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

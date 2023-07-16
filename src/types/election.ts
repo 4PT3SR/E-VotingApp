@@ -4,7 +4,8 @@ interface Election {
     election_type: string
     start: string
     end: string
-    department_eligibility: string
+    department_eligibility?: string
+    college_eligibility?: string
     createdAt: string
     updatedAt: string
     __v: number
