@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import * as yup from 'yup';
 import { useField, useForm } from 'vee-validate';
-import { useBaseFetch } from '~/composables/fetch';
 import { userStore } from '~/store/user';
+import useNotifications from '~/composables/useToast';
+const { createNotification } = useNotifications();
 
+provide("create-notification", createNotification);
+
+const api = useAxiosInstance()
 const user = userStore()
 const router = useRouter()
+const isLoggingIn = ref(false)
 const { handleSubmit, resetForm } = useForm({
   validationSchema: yup.object({
     matric_number: yup.string().required('Please enter your matric number'),
@@ -20,32 +25,23 @@ const { handleSubmit, resetForm } = useForm({
 const { value: matricNumber } = useField<string>('matric_number')
 const { value: password } = useField<string>('password')
 
-const {
-    post: registerUser,
-    data: token,
-    error,
-    isFetching: isLoggingIn,
-    onFetchResponse: onRegisterResponse,
-    onFetchError: onRegisterError
-} = useBaseFetch<string>('/user/login', { immediate: false }).json()
-
 const submitForm = handleSubmit(async (values: any) => {
-    await registerUser(values).execute()
-})
-
-onRegisterResponse(async () => {
-  const { __v, createdAt, updatedAt, ...obj } = token.value.user
-  user.$patch({
-    user: obj,
-    token: token.value.authToken
+  isLoggingIn.value = true
+  await api.value.post('/user/login', values).then(res => {
+    const { __v, createdAt, updatedAt, ...obj } = res.data.user
+    user.$patch({
+      user: obj,
+      token: res.data.authToken
+    })
+    resetForm()
+    router.push('/admin')
+  }).catch(err => {
+    createNotification({
+      type: 'error',
+      message: err.response.data.message
+    });
   })
-  router.push('/')
-  resetForm()
-    
-})
-
-onRegisterError(async () => {
-  console.log(error.value)
+  isLoggingIn.value = false
 })
 </script>
 
