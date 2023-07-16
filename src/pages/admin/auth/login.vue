@@ -57,8 +57,8 @@ onRegisterError(async () => {
         <div class="grid content-center justify-items-center px-5 md:px-10 md:max-w-screen-sm w-full mx-auto">
             <form class="grid gap-8 w-full" @submit.prevent="submitForm">
                 <div class="grid gap-1">
-                    <h1 class="text-2xl text-gray-900 font-semibold">Log in</h1>
-                    <p class="text-base text-gray-600 font-normal">Enter your matriculation number and password to access your account.</p>
+                    <h1 class="text-2xl text-gray-900 font-semibold">Admin Login</h1>
+                    <p class="text-base text-gray-600 font-normal">Enter your matriculation number and password to access your admin account.</p>
                 </div>
                 <div class="grid gap-5">
                     <TextInput v-model.trim="matricNumber" name="email" type="text" label="Matriculation number" />
