@@ -30,7 +30,7 @@ const buttonClass = computed(() => ({
 <style scoped>
 @import url("~/style.css");
 .e-button {
-    @apply flex justify-center items-center w-fit bg-blue-600 rounded-lg text-xs text-white disabled:cursor-not-allowed font-semibold focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300 ease-out
+    @apply flex h-fit justify-center items-center w-fit bg-blue-600 rounded-lg text-xs text-white disabled:cursor-not-allowed font-semibold focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300 ease-out
 }
 
 .e-button--inverted {

@@ -34,7 +34,7 @@ const submitForm = handleSubmit(async (values: any) => {
       token: res.data.authToken
     })
     resetForm()
-    router.push('/admin')
+    router.push('/')
   }).catch(err => {
     createNotification({
       type: 'error',

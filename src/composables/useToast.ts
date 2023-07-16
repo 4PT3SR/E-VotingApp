@@ -1,4 +1,3 @@
-import { ref } from "vue"
 import { useToasts } from '~/store/toasts'
 
 export interface Notification {
