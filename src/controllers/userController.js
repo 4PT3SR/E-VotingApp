@@ -41,9 +41,6 @@ exports.register = async (req, res, next) => {
       return Array.from(document.querySelectorAll('.dataTable tbody tr td u'), e => e.textContent)
     })
 
-
-
-
     let selectedData = bioData.filter((_, index) => (index + 1) % 2 === 0);
 
     await browser.close();
