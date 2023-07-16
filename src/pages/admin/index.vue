@@ -2,6 +2,10 @@
 import { useAxiosInstance } from '~/composables/useAxiosInstance';
 import type { User } from "~/types/user";
 import { userStore } from '~/store/user';
+import useNotifications from '~/composables/useToast';
+const { createNotification } = useNotifications();
+
+provide("create-notification", createNotification);
 
 const api = useAxiosInstance()
 const store = userStore()
@@ -20,7 +24,10 @@ const getAllUsers = async() => {
 const activateUser = async (id: string) => {
     isFetching.value = true
     api.value.patch(`/admin/users/${id}/addadmin`).then((res) => {
-        console.log(res)
+        createNotification({
+            type: 'success',
+            message: res.data.status
+        });
         getAllUsers()
     }).catch((err) => {
         console.error(err)
@@ -30,7 +37,10 @@ const activateUser = async (id: string) => {
 const deactivateUser = async (id: string) => {
     isFetching.value = true
     api.value.patch(`/admin/users/${id}/removeadmin`).then((res) => {
-        console.log(res)
+        createNotification({
+            type: 'success',
+            message: res.data.status
+        });
         getAllUsers()
     }).catch((err) => {
         console.error(err)

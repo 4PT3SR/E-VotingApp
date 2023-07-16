@@ -3,6 +3,10 @@ import * as yup from 'yup';
 import { useAxiosInstance } from '~/composables/useAxiosInstance';
 import type { FullElection } from '~/types/election';
 import { useTimeAgo, useNow } from '@vueuse/core';
+import useNotifications from '~/composables/useToast';
+const { createNotification } = useNotifications();
+
+provide("create-notification", createNotification);
 
 const now = useNow()
 const api = useAxiosInstance()
@@ -80,7 +84,11 @@ const submitForm = handleSubmit(async (values: any) => {
         const { department_eligibility, ...rest } = values
         newValues = {...rest}
     }
-    await api.value.post('/election', newValues).then(() => {
+    await api.value.post('/election', newValues).then((res) => {
+        createNotification({
+            type: 'success',
+            message: res.data.status
+        });
         fetchElections()
         closeModal()
     }).catch((err) => {
@@ -166,7 +174,7 @@ watch(type, () => {
                             <tr v-for="election in elections" :key="election._id" class="even:bg-white odd:bg-gray-50 text-sm">
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">{{ election.title }}</td>
                                 <td class="px-6 py-4 text-gray-600">{{ election.election_type }}</td>
-                                <td class="px-6 py-4 text-gray-600">{{ election.department_eligibility ?? election.college_eligibility }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ election.department_eligibility ?? election.college_eligibility ?? '-' }}</td>
                                 <td class="px-6 py-4 text-gray-600">{{ election.posts.length }} {{ election.posts.length == 1 ? 'post' : 'posts' }}</td>
                                 <td class="px-6 py-4 text-gray-600 capitalize">{{ useTimeAgo(election.start).value }}</td>
                                 <td class="px-6 py-4 text-gray-600 capitalize">{{ useTimeAgo(election.end).value }}</td>

@@ -25,6 +25,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('./components/Select.vue')['default']
     TextInput: typeof import('./components/TextInput.vue')['default']
+    Toast: typeof import('./components/Toast.vue')['default']
     TransitionChild: typeof import('@headlessui/vue')['TransitionChild']
     TransitionRoot: typeof import('@headlessui/vue')['TransitionRoot']
   }
