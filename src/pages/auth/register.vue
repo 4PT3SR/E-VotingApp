@@ -26,7 +26,7 @@ const { value: matricNumber } = useField<string>('matric_number')
 const { value: password } = useField<string>('password')
 
 const submitForm = handleSubmit(async (values: any) => {
-  await api.value.post('/user/login', values).then(res => {
+  await api.value.post('/user/register', values).then(res => {
     const { __v, createdAt, updatedAt, ...obj } = res.data.user
     user.$patch({
       user: obj,
