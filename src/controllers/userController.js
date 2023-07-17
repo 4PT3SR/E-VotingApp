@@ -29,10 +29,9 @@ exports.register = async (req, res, next) => {
         "--single-process",
         "--no-zygote",
       ],
-      executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
-      headless: false
+      executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath()
     });
-
+    console.log('started')
     const page = await browser.newPage();
     await page.goto('https://portal.bellsuniversity.edu.ng/');
     await page.waitForSelector('#mat');
