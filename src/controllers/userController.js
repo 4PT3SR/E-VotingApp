@@ -20,6 +20,7 @@ const contract = require("../helpers/contract_connect");
 // @acccess                PUBLIC
 exports.register = async (req, res, next) => {
   try {
+    console.log('first console')
     const body = await registerSchema.validateAsync(req.body);
     const browser = await puppeteer.launch({
       args: [
@@ -34,6 +35,7 @@ exports.register = async (req, res, next) => {
     const page = await browser.newPage();
     await page.goto('https://portal.bellsuniversity.edu.ng/');
     await page.waitForSelector('#mat');
+    console.log('gotten to this point');
     await page.type('#mat', body.matric_number);
     await page.type('#pass', body.password);
     await page.click(".btn.btn-warning.pull-right");
@@ -42,16 +44,17 @@ exports.register = async (req, res, next) => {
     if (loginError) {
       throw new AppError('Invalid Matric Number/Passsword', 201);
     }
+    console.log('third')
     await page.waitForSelector('.middle-nav');
     await page.click('a[href="profile.php"]');
     await page.waitForSelector('#DataTables_Table_0');
     const bioData = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('.dataTable tbody tr td u'), e => e.textContent)
     })
-
+    await browser.close();
+    console.log('closed')
     let selectedData = bioData.filter((_, index) => (index + 1) % 2 === 0);
 
-    await browser.close();
     const fullname = extractName(selectedData[1]);
     let studentInfo = {
       matric_number: selectedData[0],
@@ -71,6 +74,7 @@ exports.register = async (req, res, next) => {
     const department = await Data.findOne({
       title: 'departments'
     });
+    console.log('fifth')
     // console.log(college, college.data, department);
     if (!college.data.includes(studentInfo.faculty)) {
       college.data.push(studentInfo.faculty);
