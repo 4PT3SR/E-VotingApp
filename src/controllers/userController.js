@@ -94,11 +94,12 @@ exports.register = async (req, res, next) => {
     let contract_call = await contract();
     await contract_call.registerVoter(studentInfo.matric_number, studentInfo.email);
 
-
-    await User.create(studentInfo);
+    const user = await User.create(studentInfo);
+    const authToken = generateToken(res, user._id);
     res.status(200).json({
       status: 'Success',
-      message: 'Student registered successfuly'
+      user,
+      authToken
     });
 
 
