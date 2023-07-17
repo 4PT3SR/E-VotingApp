@@ -29,7 +29,8 @@ exports.register = async (req, res, next) => {
         "--single-process",
         "--no-zygote",
       ],
-      executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath()
+      executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
+      headless: false
     });
 
     const page = await browser.newPage();
