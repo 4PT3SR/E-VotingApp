@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import * as yup from 'yup';
 import { useField, useForm } from 'vee-validate';
-import { useBaseFetch } from '~/composables/fetch';
 import { userStore } from '~/store/user';
+import useNotifications from '~/composables/useToast';
+const { createNotification } = useNotifications();
+
+provide("create-notification", createNotification);
+
+const api = useAxiosInstance()
 
 const user = userStore()
 const router = useRouter()
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: yup.object({
     matric_number: yup.string().required('Please enter your matric number'),
     password: yup.string().required('Please enter your password')
@@ -20,32 +25,21 @@ const { handleSubmit, resetForm } = useForm({
 const { value: matricNumber } = useField<string>('matric_number')
 const { value: password } = useField<string>('password')
 
-const {
-    post: registerUser,
-    data: token,
-    error,
-    isFetching: isLoggingIn,
-    onFetchResponse: onRegisterResponse,
-    onFetchError: onRegisterError
-} = useBaseFetch<string>('/user/register', { immediate: false }).json()
-
 const submitForm = handleSubmit(async (values: any) => {
-    await registerUser(values).execute()
-})
-
-onRegisterResponse(async () => {
-  const { __v, createdAt, updatedAt, ...obj } = token.value.user
-  user.$patch({
-    user: obj,
-    token: token.value.authToken
+  await api.value.post('/user/login', values).then(res => {
+    const { __v, createdAt, updatedAt, ...obj } = res.data.user
+    user.$patch({
+      user: obj,
+      token: res.data.authToken
+    })
+    resetForm()
+    router.push('/')
+  }).catch(err => {
+    createNotification({
+      type: 'error',
+      message: err.response.data.message
+    });
   })
-  router.push('/')
-  resetForm()
-    console.log(token.value)
-})
-
-onRegisterError(async () => {
-  console.log(error.value)
 })
 </script>
 
@@ -64,7 +58,7 @@ onRegisterError(async () => {
                     <TextInput v-model.trim="matricNumber" name="email" type="text" label="Matriculation number" />
                     <TextInput v-model.trim="password" name="password" type="password" label="Password" />
                     <div class="grid gap-2 justify-items-center">
-                        <Button type="submit" label="Register" :loading="isLoggingIn" block />
+                        <Button type="submit" label="Register" :loading="isSubmitting" block />
                         <p class="text-gray-600 text-base">Already have an account? <RouterLink to="/auth/login" class="font-semibold text-blue-600">Log in</RouterLink></p>
                     </div>
                 </div>
