@@ -92,7 +92,8 @@ exports.register = async (req, res, next) => {
     //TODO: Contract.registerVoter() -> await
     //wait for endpoint to finish execution before moving to next stage 
     let contract_call = await contract();
-    await contract_call.registerVoter(studentInfo.matric_number, studentInfo.email);
+    let tx = await contract_call.registerVoter(studentInfo.matric_number, studentInfo.email);
+    await tx.wait();
 
     const user = await User.create(studentInfo);
     const authToken = generateToken(res, user._id);
