@@ -16,7 +16,7 @@ exports.isAdmin = async (req, res, next) => {
 exports.isStudent = async (req, res, next) => {
     try {
         const user = req.user;
-        if (user.role === 'USER' || (user.role === 'USER' && user.isAdmin)) {
+        if (user.role === 'USER' || user.role === 'ADMIN') {
             return next()
         }
 

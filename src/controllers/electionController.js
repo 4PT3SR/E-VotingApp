@@ -183,27 +183,28 @@ exports.vote = async (req, res, next) => {
     // This is just a dummy code, blockchain code goes in here.....
     // Verify that the user hasn't alreadyvoted and if they have not, 
     // store thier votes to the respective candidate on the blockchain.... 
-    const votedCandidates = req.body;
-
-    for (const candidateId of votedCandidates) {
-      const candidate = await Candidate.findById(candidateId);
-      if (!candidate) {
-        throw new AppError('Candidate not found', 400);
-      }
-      candidate.votes += 1;
-      await candidate.save();
-
-      //find post by id
-      const post = Post.findById(candidate.post);
-      if (!post) {
-        throw new AppError('Oops..Post does not exist', 400);
-      }
-
-      //TODO: Contract.CastVote() -> await
-      let contract_call = await contract();
-      let tx = await contract_call.castVote(post.election, candidate._id, candidate.fullname, post._id, req.user.matric_number, req.user.email);
-      await tx.wait();
+    const votedCandidate = req.params.candidateId;
+    const election = req.election;
+    const candidate = await Candidate.findById(votedCandidate);
+    if (!candidate) {
+      throw new AppError('Candidate not found', 400);
     }
+
+    console.log(election, election.posts)
+    if (!election.posts.includes(candidate.post)) {
+      throw new AppError('Candidate does not belong to the specified post', 400)
+    }
+
+
+
+
+
+    //TODO: Contract.CastVote() -> await
+    let contract_call = await contract();
+    // let tx = await contract_call.castVote(post.election, candidate._id, candidate.fullname, post._id, req.user.matric_number, req.user.email);
+    let tx = await contract_call.castVote(election._id, candidate._id, candidate.fullname, candidate.post, req.user.matric_number, req.user.email);
+    await tx.wait();
+
 
     res.status(200).json({
       status: 'success',
@@ -214,6 +215,7 @@ exports.vote = async (req, res, next) => {
     next(error);
   }
 }
+
 
 exports.getAllElections = async (req, res, next) => {
   try {
@@ -308,18 +310,21 @@ exports.getElection = async (req, res, next) => {
 
 }
 
+
 exports.getPost = async (req, res, next) => {
   try {
     const postId = req.params.id;
     const query = Post.findById(postId);
 
-    if (!query) {
-      throw new AppError("Post not found", 400);
-    }
+
 
     const post = await query.populate([{
       path: 'candidates'
     }])
+
+    if (!post) {
+      throw new AppError("Post not found", 400);
+    }
 
     res.status(200).json({
       status: 'Success',

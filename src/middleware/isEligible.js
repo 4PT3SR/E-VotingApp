@@ -1,7 +1,4 @@
-const Election = require('../models/electionModel');
 const AppError = require('../utils/AppError');
-
-
 
 
 const checkCollege = (userCollege, collegeEligibility) => {
@@ -18,17 +15,13 @@ const checkDepartment = (userDepartment, departmentEligibility) => {
 
 exports.isEligible = async (req, res, next) => {
     try {
-        const electionId = req.params.id;
         const user = req.user;
-        const election = await Election.findById(electionId);
-        req.election = election;
-
-        if (!election) throw new AppError('Election does not exist', 400)
+        const election = req.election;
         const electionType = election.election_type;
         if (electionType === 'Department') {
-            checkDepartment(user.faculty, election.department_eligibility)
+            checkDepartment(user.department, election.department_eligibility)
         } else if (electionType === 'College') {
-            checkCollege(user.department, election.department_eligibility)
+            checkCollege(user.faculty, election.department_eligibility)
         }
 
         next()
