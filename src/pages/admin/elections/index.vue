@@ -17,13 +17,13 @@ const fetchingDepartment = ref(false)
 const apiError = ref('')
 const elections = ref<FullElection[]>([])
 const types = ref<string[]>(['General', 'Department', 'College'])
-const colleges = ref([])
-const departments = ref([])
+const colleges = ref([]) as any
+const departments = ref([]) as any
 const filteredColleges = computed(() => {
-    return colleges.value.map((college:any) => college?.data[0])
+    return colleges.value[0]?.data
 })
 const filteredDepartments = computed(() => {
-    return departments.value.map((department:any) => department?.data[0])
+    return departments.value[0]?.data
 })
 
 const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
