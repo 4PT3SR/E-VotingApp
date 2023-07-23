@@ -1,15 +1,32 @@
 <script setup lang="ts">
 import { useAxiosInstance } from '~/composables/useAxiosInstance';
 import { Post } from '~/types/election';
+import useNotifications from '~/composables/useToast';
+const { createNotification } = useNotifications();
+
+provide("create-notification", createNotification);
 
 const api = useAxiosInstance()
 const route = useRoute()
-const router = useRouter()
 const isFetching = ref(false)
 const url = computed(() => {
     return `/election/posts/${route.params.post}`
 })
-const post = ref<Post>()
+const post = ref<Post & { election: string }>()
+
+const voteUser = async(id: string) => {
+    await api.value.post(`/election/${post.value?.election}/candidate/${id}/vote`).then((res) => {
+        createNotification({
+            type: 'success',
+            message: res.data.status
+        });
+    }).catch((err) => {
+        createNotification({
+            type: 'error',
+            message: err.response.data.message
+        });
+    })
+}
 
 onMounted(() => {
     isFetching.value = true
@@ -36,7 +53,7 @@ onMounted(() => {
                             <span class="font-medium text-base text-gray-900 capitalize">{{ candidate.fullname }}</span>
                         </div>
                         <span class="font-medium text-base text-gray-900">{{ candidate.votes == 1 ? `${candidate.votes} vote` : `${candidate.votes} votes` }}</span>
-                        <Button label="Vote" rounded @click="router.push(`/election/${candidate._id}/vote`)" />
+                        <Button label="Vote" rounded @click="voteUser(candidate._id)" />
                     </div>
                 </div>
             </div>
