@@ -107,7 +107,7 @@ onMounted(async() => {
         </div>
         <Modal :is-open="isOpen" title="Create a candidate" sub-title="Fill the form below to create a candidate." @close="closeModal">
             <form class="grid gap-4" @submit.prevent="submitForm">
-                <TextInput label="Fullname" name="name" type="text" v-model="name" :error="errors.name" />
+                <TextInput label="Fullname" name="fullname" type="text" v-model="name" :error="errors.fullname" />
                 <div class="flex items-center gap-2">
                     <Button label="Create" type="submit" block :loading="isSubmitting" />
                     <Button label="Cancel" inverted block :disabled="isSubmitting" @click="[resetForm(), closeModal()]" />
