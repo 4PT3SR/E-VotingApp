@@ -15,8 +15,8 @@ const isFetching = ref(false)
 
 const fetchPosts = async() => {
     isFetching.value = true
-    await api.value.get(`/election/posts/${route.params.id}`).then((res) => {
-        post.value = res.data.data.posts
+  await api.value.get(`/election/posts/${route.params.id}`).then((res) => {
+        post.value = res.data.data
     }).catch((err) => {
         console.error(err)
     })
@@ -25,17 +25,17 @@ const fetchPosts = async() => {
 
 const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
   validationSchema: yup.object({
-    name: yup.string().required('Please enter the fullname'),
+    fullname: yup.string().required('Please enter the fullname'),
   }),
   initialValues: {
-    name: '',
+    fullname: '',
   },
 })
 
-const { value: name } = useField<string>('name')
+const { value: name } = useField<string>('fullname')
 
 const submitForm = handleSubmit(async (values: any) => {
-    await api.value.post(`/election/${route.params.id}/candidate`, values).then((res) => {
+    await api.value.post(`/election/posts/${route.params.id}/candidate`, values).then((res) => {
         createNotification({
             type: 'success',
             message: res.data.status
@@ -77,18 +77,20 @@ onMounted(async() => {
                     <table v-if="post?.candidates.length" class="table-auto w-full">
                         <thead>
                             <tr class="text-gray-500 text-left text-xs">
-                                <th class="px-6 py-4 font-normal">Title</th>
-                                <th class="px-6 py-4 font-normal">Type</th>
-                                <th class="px-6 py-4 font-normal">Eligibility</th>
-                                <th class="px-6 py-4 font-normal">Posts</th>
-                                <th class="px-6 py-4 font-normal">Starts</th>
-                                <th class="px-6 py-4 font-normal">Ends</th>
-                                <th class="px-6 py-4 font-normal"/>
+                                <th class="px-6 py-4 font-normal">Fullname</th>
+                                <th class="px-6 py-4 font-normal">Votes</th>
                             </tr>
                         </thead>
                         <tbody class="border-y">
                             <tr v-for="candidate in post?.candidates" :key="candidate._id" class="even:bg-white odd:bg-gray-50 text-sm">
-                                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">{{ candidate.fullname }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">
+                                  <div class="flex items-center gap-2">
+                                      <img v-if="candidate.image" :src="candidate?.image" class="w-10 h-10 rounded-full" />
+                                      <div v-else class="w-10 h-10 rounded-full bg-blue-50 text-blue-700 font-semibold text-base grid content-center justify-items-center">{{ candidate.fullname.split(' ')[0].charAt(0) }}{{ candidate.fullname.split(' ')[1].charAt(0) }}</div>
+                                      <span class="font-medium text-base text-gray-900 capitalize">{{ candidate.fullname }}</span>
+                                  </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">{{ candidate.votes }}</td>
                             </tr>
                         </tbody>
                     </table>
