@@ -38,7 +38,7 @@ const submitForm = handleSubmit(async (values: any) => {
     await api.value.post(`/election/posts/${route.params.id}/candidate`, values).then((res) => {
         createNotification({
             type: 'success',
-            message: res.data.status
+            message: res.data.message
         });
         resetForm()
         fetchPosts()
