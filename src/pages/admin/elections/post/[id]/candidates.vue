@@ -12,6 +12,7 @@ const route = useRoute()
 const post = ref<Post>()
 const isOpen = ref(false)
 const isFetching = ref(false)
+const image = ref<File>()
 
 const fetchPosts = async() => {
     isFetching.value = true
@@ -34,8 +35,18 @@ const { handleSubmit, resetForm, isSubmitting, errors } = useForm({
 
 const { value: name } = useField<string>('fullname')
 
+const handleImage = (e: Event) => {
+    const input = e.target as HTMLInputElement
+    const files: FileList = input.files!
+    image.value = files[0]
+}
+
 const submitForm = handleSubmit(async (values: any) => {
-    await api.value.post(`/election/posts/${route.params.id}/candidate`, values).then((res) => {
+    let newValues = {...values}
+    if (image.value?.name) {
+        newValues.image = image.value
+    }
+    await api.value.post(`/election/posts/${route.params.id}/candidate`, newValues).then((res) => {
         createNotification({
             type: 'success',
             message: res.data.message
@@ -108,6 +119,14 @@ onMounted(async() => {
         <Modal :is-open="isOpen" title="Create a candidate" sub-title="Fill the form below to create a candidate." @close="closeModal">
             <form class="grid gap-4" @submit.prevent="submitForm">
                 <TextInput label="Fullname" name="fullname" type="text" v-model="name" :error="errors.fullname" />
+                <label class="rounded-lg border border-dashed border-gray-500 p-2 bg-gray-100">
+                    <div class="grid gap-2 content-center justify-items-center">
+                        <span class="font-medium text-sm text-gray-800">Upload Candidate Image</span>
+                        <span class="font-semibold text-xs text-blue-600">Click here</span>
+                    </div>
+                    <input class="hidden" type="file" name="avatar" accept="image/*" @change="handleImage($event)" />
+                </label>
+                {{ image?.name ?? '' }}
                 <div class="flex items-center gap-2">
                     <Button label="Create" type="submit" block :loading="isSubmitting" />
                     <Button label="Cancel" inverted block :disabled="isSubmitting" @click="[resetForm(), closeModal()]" />
