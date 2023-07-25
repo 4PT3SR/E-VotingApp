@@ -37,7 +37,7 @@ candidateSchema.methods.toJSON = function () {
 
     const candidate = this;
     let candidateObject = candidate.toObject();
-    // delete userObject.tokens
+
     delete candidateObject.votes
 
     return candidateObject;

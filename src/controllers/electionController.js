@@ -277,45 +277,29 @@ exports.getAllElections = async (req, res, next) => {
 exports.getElection = async (req, res, next) => {
   try {
     let electionId = req.params.id;
-    const query = Election.findById(electionId);
-    if (!query) {
-      throw new AppError('Election not found', 400)
-    }
-    const election = await query.populate([{
+    const election = await Election.findById(electionId).populate([{
       path: 'posts',
       select: '_id title'
       // populate: {
       //     path: 'candidates',
       //     select: '-post -updatedAt -createdAt -__v'
       // }
-    }]);
+    }]);;
+    if (!election) {
+      throw new AppError('Election not found', 400)
+    }
 
-    console.log(election);
 
-
-
-    //TODO: GetVotesByElection: Gets all candidate data and votes by election and posts
-    let contract_call = await contract();
-    //TODO: Iterate through the posts array to get each post's id. test case with only the first shown below
-    let post = election.posts[0];
-    let result = await contract_call.getVotesByElection(election._id.toString(), post._id.toString());
-
-    result = result.reduce((acc, [_, candidateName, postId, voteCount, _a]) => {
-      if (!acc[election._id.toString()]) {
-        acc[election._id.toString()] = [];
-      }
-
-      acc[election._id.toString()].push({ candidateName, postId, voteCount: Number(voteCount), electionType: post.title });
-      return acc;
-    }, {});
 
     res.status(200).json({
       status: 'Success',
-      data: result
+      data: election
     });
 
+
+
   } catch (error) {
-    console.error(error)
+    // console.error(error)
     next(error)
   }
 
@@ -347,6 +331,31 @@ exports.getPost = async (req, res, next) => {
 exports.getResult = async (req, res, next) => {
   try {
 
+    const election = req.election;
+    //TODO: GetVotesByElection: Gets all candidate data and votes by election and posts
+    let contract_call = await contract();
+    //TODO: Iterate through the posts array to get each post's id. test case with only the first shown below
+    let post = election.posts[0];
+    let result = await contract_call.getVotesByElection(election._id.toString(), post._id.toString());
+
+    result = result.reduce((acc, [_, candidateName, postId, voteCount, _a]) => {
+      if (!acc[election._id.toString()]) {
+        acc[election._id.toString()] = [];
+      }
+
+      acc[election._id.toString()].push({
+        candidateName,
+        postId,
+        voteCount: Number(voteCount),
+        electionType: post.title
+      });
+      return acc;
+    }, {});
+
+    res.status(200).json({
+      status: 'Success',
+      data: result
+    });
   } catch (error) {
     next(error)
   }

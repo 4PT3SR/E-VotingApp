@@ -20,6 +20,9 @@ const {
 const {
     isEligible
 } = require('../middleware/isEligible');
+const {
+    electionEnded
+} = require('../middleware/electionEnded')
 const upload = require('../utils/multer')
 
 router.post('/', auth, isAdmin, createElection);
@@ -29,7 +32,7 @@ router.post('/:electionId/candidate/:candidateId/vote', auth, isStudent, isElect
 router.get('/', getAllElections);
 router.get('/:id', getElection);
 router.get('/posts/:id', getPost);
-router.get('/:id/result', getResult)
+router.get('/:id/result', electionEnded, getResult);
 // router.get('/:id/results', auth, vote)
 
 
