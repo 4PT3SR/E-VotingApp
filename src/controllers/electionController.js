@@ -68,7 +68,7 @@ exports.createPost = async (req, res, next) => {
       throw new AppError('Cannot add a post while election is ongong or has ended', 400)
     }
 
-    // const payload = await postSchema.validateAsync(req.body);
+    const payload = await postSchema.validateAsync(req.body);
 
     //is election onGoing
 
@@ -113,6 +113,7 @@ exports.createPost = async (req, res, next) => {
 exports.createCandidate = async (req, res, next) => {
   try {
     const relatedPost = req.params.id;
+    const fullName = req.body.fullname
     const post = await Post.findOne({
       _id: relatedPost
     })
@@ -127,10 +128,11 @@ exports.createCandidate = async (req, res, next) => {
     }
     // const payload = await candidateSchema.validateAsync(req.body);
 
+
     //check if candidate does not already exist
     const existingCandidate = await Candidate.find({
       fullname: {
-        $regex: payload.fullname,
+        $regex: fullName,
         $options: "i"
       }
     }).where('post').equals(relatedPost);
@@ -140,7 +142,7 @@ exports.createCandidate = async (req, res, next) => {
     }
 
     const candidate = await new Candidate({
-      ...payload,
+      fullname: fullName,
       post: relatedPost
     });
 
