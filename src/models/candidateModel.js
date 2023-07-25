@@ -33,7 +33,15 @@ const candidateSchema = new mongoose.Schema({
     timestamps: true
 });
 
+candidateSchema.methods.toJSON = function () {
 
+    const candidate = this;
+    let candidateObject = candidate.toObject();
+    // delete userObject.tokens
+    delete candidateObject.votes
+
+    return candidateObject;
+}
 
 const Candidate = new mongoose.model('candidate', candidateSchema);
 
