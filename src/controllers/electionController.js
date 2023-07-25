@@ -68,7 +68,7 @@ exports.createPost = async (req, res, next) => {
       throw new AppError('Cannot add a post while election is ongong or has ended', 400)
     }
 
-    const payload = await postSchema.validateAsync(req.body);
+    // const payload = await postSchema.validateAsync(req.body);
 
     //is election onGoing
 
@@ -125,7 +125,7 @@ exports.createCandidate = async (req, res, next) => {
     if (!(election.start > Date.now())) {
       throw new AppError('Cannot add a candidate while election is ongong or has ended', 400)
     }
-    const payload = await candidateSchema.validateAsync(req.body);
+    // const payload = await candidateSchema.validateAsync(req.body);
 
     //check if candidate does not already exist
     const existingCandidate = await Candidate.find({
@@ -333,5 +333,13 @@ exports.getPost = async (req, res, next) => {
 
   } catch (error) {
     next(error)
+  }
+}
+
+exports.getResult = async (req, res, next) => {
+  try {
+
+  } catch (error) {
+
   }
 }

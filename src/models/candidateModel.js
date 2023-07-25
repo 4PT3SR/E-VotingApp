@@ -8,6 +8,10 @@ const candidateSchema = new mongoose.Schema({
     fullname: {
         type: String,
         required: true,
+        trim: true,
+        minLength: [7, 'fullname is too short'],
+        maxLength: [50, 'fullname is too long']
+
     },
     image: {
         type: String

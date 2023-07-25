@@ -7,7 +7,8 @@ const {
     vote,
     getAllElections,
     getElection,
-    getPost
+    getPost,
+    getResult
 } = require('../controllers/electionController');
 const {
     isAdmin,
@@ -27,7 +28,8 @@ router.post('/posts/:id/candidate', auth, isAdmin, upload.single('image'), creat
 router.post('/:electionId/candidate/:candidateId/vote', auth, isStudent, isElectionActive, isEligible, vote);
 router.get('/', getAllElections);
 router.get('/:id', getElection);
-router.get('/posts/:id', getPost)
+router.get('/posts/:id', getPost);
+router.get('/:id/result', getResult)
 // router.get('/:id/results', auth, vote)
 
 
