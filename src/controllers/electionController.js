@@ -34,7 +34,7 @@ exports.createElection = async (req, res, next) => {
 
     //TODO: Call Contract.CreateElection() here and await execution
     let contract_call = await contract();
-    let tx = await contract_call.createElection(election._id, election.title, toEpoch(election.start), toEpoch(election.end), indexOf(election.election_type));
+    let tx = await contract_call.createElection(election._id.toString(), election.title, toEpoch(election.start), toEpoch(election.end), indexOf(election.election_type));
     await tx.wait();
 
     res.status(200).json({
@@ -165,7 +165,7 @@ exports.createCandidate = async (req, res, next) => {
 
     //TODO: Contract.registerCandidate() -> await
     let contract_call = await contract();
-    let tx = await contract_call.registerCandidate(post.election, candidate._id, candidate.fullname, post._id, indexOf(query.election_type));
+    let tx = await contract_call.registerCandidate(post.election.toString(), candidate._id.toString(), candidate.fullname, post._id.toString(), indexOf(query.election_type));
     await tx.wait();
 
     post.save();
@@ -204,7 +204,7 @@ exports.vote = async (req, res, next) => {
     //TODO: Contract.CastVote() -> await
     let contract_call = await contract();
     // let tx = await contract_call.castVote(post.election, candidate._id, candidate.fullname, post._id, req.user.matric_number, req.user.email);
-    let tx = await contract_call.castVote(election._id, candidate._id, candidate.fullname, candidate.post, req.user.matric_number, req.user.email);
+    let tx = await contract_call.castVote(election._id.toString(), candidate._id.toString(), candidate.fullname, candidate.post.toString(), req.user.matric_number, req.user.email);
     await tx.wait();
 
 
@@ -217,7 +217,6 @@ exports.vote = async (req, res, next) => {
     next(error);
   }
 }
-
 
 exports.getAllElections = async (req, res, next) => {
   try {
@@ -291,42 +290,49 @@ exports.getElection = async (req, res, next) => {
       // }
     }]);
 
+    console.log(election);
+
+
 
     //TODO: GetVotesByElection: Gets all candidate data and votes by election and posts
-    // let contract_call = await contract();
+    let contract_call = await contract();
     //TODO: Iterate through the posts array to get each post's id. test case with only the first shown below
-    // let post_id = query.posts[0];
-    // let tx = await contract_call.GetVotesByElection(query._id, post_id);
+    let post = election.posts[0];
+    let result = await contract_call.getVotesByElection(election._id.toString(), post._id.toString());
 
-    // let result = tx.wait();
-    // console.log(result);
+    result = result.reduce((acc, [_, candidateName, postId, voteCount, _]) => {
+      if (!acc[election._id.toString()]) {
+        acc[election._id.toString()] = [];
+      }
+
+      acc[election._id.toString()].push({ candidateName, postId, voteCount: Number(voteCount), electionType: post.title });
+      return acc;
+    }, {});
 
     res.status(200).json({
       status: 'Success',
-      data: election
+      data: result
     });
 
   } catch (error) {
+    console.error(error)
     next(error)
   }
 
 }
-
 
 exports.getPost = async (req, res, next) => {
   try {
     const postId = req.params.id;
     const query = Post.findById(postId);
 
-
+    if (!query) {
+      throw new AppError("Post not found", 400);
+    }
 
     const post = await query.populate([{
       path: 'candidates'
     }])
-
-    if (!post) {
-      throw new AppError("Post not found", 400);
-    }
 
     res.status(200).json({
       status: 'Success',
@@ -342,6 +348,6 @@ exports.getResult = async (req, res, next) => {
   try {
 
   } catch (error) {
-
+    next(error)
   }
 }
