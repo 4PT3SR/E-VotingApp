@@ -46,7 +46,7 @@ const submitForm = handleSubmit(async (values: any) => {
     if (image.value?.name) {
         newValues.image = image.value
     }
-    await api.value.post(`/election/posts/${route.params.id}/candidate`, newValues).then((res) => {
+    await api.value.post(`/election/posts/${route.params.id}/candidate`, newValues, { headers:  { "Content-Type": "multipart/form-data" }}).then((res) => {
         createNotification({
             type: 'success',
             message: res.data.message
