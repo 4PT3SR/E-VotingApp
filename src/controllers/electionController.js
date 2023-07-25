@@ -300,7 +300,7 @@ exports.getElection = async (req, res, next) => {
     let post = election.posts[0];
     let result = await contract_call.getVotesByElection(election._id.toString(), post._id.toString());
 
-    result = result.reduce((acc, [_, candidateName, postId, voteCount, _]) => {
+    result = result.reduce((acc, [_, candidateName, postId, voteCount, _a]) => {
       if (!acc[election._id.toString()]) {
         acc[election._id.toString()] = [];
       }
