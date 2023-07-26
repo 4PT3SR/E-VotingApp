@@ -330,13 +330,20 @@ exports.getPost = async (req, res, next) => {
 
 exports.getResult = async (req, res, next) => {
   try {
-
+    const postId = req.params.postId;
+    const post = await Post.findById(postId);
+    if (!post) {
+      throw new AppError('Post does not exist', 400)
+    }
     const election = req.election;
+    if (!election.posts.includes(postId)) {
+      throw new AppError('Post does not belong to the specified election', 400)
+    }
     //TODO: GetVotesByElection: Gets all candidate data and votes by election and posts
     let contract_call = await contract();
     //TODO: Iterate through the posts array to get each post's id. test case with only the first shown below
-    let post = election.posts[0];
-    let result = await contract_call.getVotesByElection(election._id.toString(), post._id.toString());
+    // let post = election.posts[0];
+    let result = await contract_call.getVotesByElection(election._id.toString(), postId);
 
     result = result.reduce((acc, [_, candidateName, postId, voteCount, _a]) => {
       if (!acc[election._id.toString()]) {

@@ -4,15 +4,8 @@ const Election = require('../models/electionModel');
 // This checks if the election is active
 exports.electionEnded = async (req, res, next) => {
     try {
-        const electionId = req.params.id;
-        const election = await Election.findById(electionId).populate([{
-            path: 'posts',
-            select: '_id title'
-            // populate: {
-            //     path: 'candidates',
-            //     select: '-post -updatedAt -createdAt -__v'
-            // }
-        }]);
+        const electionId = req.params.electionId;
+        const election = await Election.findById(electionId);
         if (!election) throw new AppError('Election does not exist', 400);
         req.election = election;
         const date = Date.now();

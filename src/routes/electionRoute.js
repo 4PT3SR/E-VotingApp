@@ -32,7 +32,7 @@ router.post('/:electionId/candidate/:candidateId/vote', auth, isStudent, isElect
 router.get('/', getAllElections);
 router.get('/:id', getElection);
 router.get('/posts/:id', getPost);
-router.get('/:id/result', electionEnded, getResult);
+router.get('/:electionId/posts/:postId/result', electionEnded, getResult);
 // router.get('/:id/results', auth, vote)
 
 
