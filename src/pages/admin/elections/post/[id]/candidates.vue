@@ -89,7 +89,6 @@ onMounted(async() => {
                         <thead>
                             <tr class="text-gray-500 text-left text-xs">
                                 <th class="px-6 py-4 font-normal">Fullname</th>
-                                <th class="px-6 py-4 font-normal">Votes</th>
                             </tr>
                         </thead>
                         <tbody class="border-y">
@@ -101,7 +100,6 @@ onMounted(async() => {
                                       <span class="font-medium text-base text-gray-900 capitalize">{{ candidate.fullname }}</span>
                                   </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">{{ candidate.votes }}</td>
                             </tr>
                         </tbody>
                     </table>

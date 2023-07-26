@@ -40,7 +40,8 @@ const currentDate = computed(() => {
                 <div v-else class="mt-5 grid divide-y divide-gray-300">
                     <div v-for="post in election.posts" :key="post._id" class="flex items-center justify-between py-3 px-2 transition-color ease hover:bg-gray-50">
                         <span class="font-medium text-base text-gray-900">{{ post.title }}</span>
-                        <Button label="Vote now" rounded @click="router.push(`/election/${post._id}/vote`)" />
+                        <Button v-if="currentDate.value < election?.end!" label="View result" rounded @click="router.push(`/election/${election._id}/${post._id}/result`)" />
+                        <Button v-else label="Vote now" rounded @click="router.push(`/election/${post._id}/result`)" />
                     </div>
                 </div>
             </div>

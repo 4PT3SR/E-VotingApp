@@ -52,7 +52,6 @@ onMounted(() => {
                             <div v-else class="w-10 h-10 rounded-full bg-blue-50 text-blue-700 font-semibold text-base grid content-center justify-items-center">{{ candidate.fullname.split(' ')[0].charAt(0) }}{{ candidate.fullname.split(' ')[1].charAt(0) }}</div>
                             <span class="font-medium text-base text-gray-900 capitalize">{{ candidate.fullname }}</span>
                         </div>
-                        <span class="font-medium text-base text-gray-900">{{ candidate.votes == 1 ? `${candidate.votes} vote` : `${candidate.votes} votes` }}</span>
                         <Button label="Vote" rounded @click="voteUser(candidate._id)" />
                     </div>
                 </div>
