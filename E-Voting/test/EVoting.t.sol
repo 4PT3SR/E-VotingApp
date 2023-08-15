@@ -119,8 +119,40 @@ contract EVotingTest is Test {
         vm.stopPrank();
     }
 
-    function testCantRegisterCandidate_AlreadyRegistered() public {
+    function testCandidateRegistrationThree() public {
         testCandidateRegistrationTwo();
+
+        startHoax(address(1));
+
+        string memory _electionId = "1";
+        string memory _candidateId = "3";
+        string memory _candidateName = "Janeth Doe";
+        string memory _post = "Sports Director";
+        uint8 _electionType = 2;
+
+        evotingCore.registerCandidate(
+            _electionId,
+            _candidateId,
+            _candidateName,
+            _post,
+            _electionType
+        );
+
+        (, string memory candidateName, , , ) = evotingCore.CandidateStats(
+            keccak256(abi.encodePacked(_electionId)),
+            keccak256(abi.encodePacked(_post)),
+            keccak256(abi.encodePacked(_candidateId))
+        );
+        assertTrue(
+            keccak256(abi.encodePacked(candidateName)) ==
+                keccak256(abi.encodePacked(_candidateName))
+        );
+
+        vm.stopPrank();
+    }
+
+    function testCantRegisterCandidate_AlreadyRegistered() public {
+        testCandidateRegistrationThree();
 
         startHoax(address(1));
 
@@ -143,7 +175,7 @@ contract EVotingTest is Test {
     }
 
     function testRegisterVoter() public {
-        testCandidateRegistrationTwo();
+        testCandidateRegistrationThree();
 
         startHoax(address(1));
 
@@ -192,6 +224,43 @@ contract EVotingTest is Test {
         assertTrue(johnVotes == 1);
     }
 
+    function testCastVoteTwo() public {
+        testCastVote();
+
+        startHoax(address(1));
+
+        string memory _electionId = "1";
+        string memory _candidateId = "3";
+        string memory _candidateName = "Janeth Doe";
+        string memory _post = "Sports Director";
+        string memory _matNo = "U19CS2023";
+        string memory _email = "Kaci_Raynor62@hotmail.com";
+
+        evotingCore.castVote(
+            _electionId,
+            _candidateId,
+            _candidateName,
+            _post,
+            _matNo,
+            _email
+        );
+
+        vm.stopPrank();
+
+        // (, , , uint256 johnVotes, ) = evotingCore.CandidateStats(
+        //     1,
+        //     keccak256(abi.encodePacked(_post)),
+        //     0
+        // );
+
+        (, , , uint256 janethVotes, ) = evotingCore.CandidateStats(
+            keccak256(abi.encodePacked(_electionId)),
+            keccak256(abi.encodePacked(_post)),
+            keccak256(abi.encodePacked(_candidateId))
+        );
+        assertTrue(janethVotes == 1);
+    }
+
     function testCantCastVote_NotWhitelisted() public {
         testRegisterVoter();
 
@@ -228,7 +297,7 @@ contract EVotingTest is Test {
     }
 
     function testGetAllVotes() public {
-        testCastVote();
+        testCastVoteTwo();
 
         EVoting.Candidate[] memory candidates = evotingCore.getVotesByElection(
             "1",
