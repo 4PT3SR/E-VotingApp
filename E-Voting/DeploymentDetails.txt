@@ -1,0 +1,19 @@
+No files changed, compilation skipped
+Deployer: 0xDA0126329208ccDc3343b3791891e99D755b7A01
+Deployed to: 0x829df60b2D9c00eA82E5d674DB4e982841b9Ce9a
+Transaction hash: 0x9a7cd1ddccdf6439c37731366db40b672eb68f93cabedf82fec5601452840101
+Starting contract verification...
+Waiting for etherscan to detect contract deployment...
+Start verifying contract `0x829df60b2d9c00ea82e5d674db4e982841b9ce9a` deployed on mumbai
+
+Submitting verification for [src/EVoting.sol:EVoting] "0x829df60b2D9c00eA82E5d674DB4e982841b9Ce9a".
+
+Submitting verification for [src/EVoting.sol:EVoting] "0x829df60b2D9c00eA82E5d674DB4e982841b9Ce9a".
+
+Submitting verification for [src/EVoting.sol:EVoting] "0x829df60b2D9c00eA82E5d674DB4e982841b9Ce9a".
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `gkeb3vp4rs4akka5dipy1wbkm9urjenttciafujfb5p6csdmny`
+	URL:
+        https://mumbai.polygonscan.com/address/0x829df60b2d9c00ea82e5d674db4e982841b9ce9a
+Contract failed to verify.

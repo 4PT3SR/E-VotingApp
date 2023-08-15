@@ -20,8 +20,9 @@ contract EVoting is Ownable {
         public CandidateStats;
     // electionId => post hash => Candidate hashes
     mapping(bytes32 => mapping(bytes32 => bytes32[])) private CandidateHashes;
-    // electionId => voter hash => bool: true = voter has casted a vote, false voter has not casted a vote
-    mapping(bytes32 => mapping(bytes32 => bool)) private userVoted;
+    // electionId => postId => voter hash => bool: true = voter has casted a vote, false voter has not casted a vote
+    mapping(bytes32 => mapping(bytes32 => mapping(bytes32 => bool)))
+        private userVoted;
 
     enum ElectionType {
         College,
@@ -55,13 +56,15 @@ contract EVoting is Ownable {
 
     modifier hasVoted(
         string memory _electionId,
+        string memory _postId,
         string memory _matNo,
         string memory _email
     ) {
-        bytes32 electionID = keccak256(abi.encodePacked(_electionId));
+        bytes32 _bElectionId = keccak256(abi.encodePacked(_electionId));
+        bytes32 _bPostId = keccak256(abi.encodePacked(_postId));
         bytes32 _bVoter = keccak256(abi.encodePacked(_matNo, _email));
         require(
-            !userVoted[electionID][_bVoter],
+            !userVoted[_bElectionId][_bPostId][_bVoter],
             "EVoting: User already voted!"
         );
         _;
@@ -221,7 +224,7 @@ contract EVoting is Ownable {
         public
         onlyOwner
         isWhitelistedToVote(_matNo, _email)
-        hasVoted(_electionId, _matNo, _email)
+        hasVoted(_electionId, _post, _matNo, _email)
     {
         bytes32 _bPost = keccak256(abi.encodePacked(_post));
         bytes32 _bVoter = keccak256(abi.encodePacked(_matNo, _email));
@@ -237,7 +240,7 @@ contract EVoting is Ownable {
             "EVoting: Candidate mismatch!"
         );
 
-        userVoted[electionId][_bVoter] = true;
+        userVoted[electionId][_bPost][_bVoter] = true;
         CandidateStats[electionId][_bPost][candidateId].voteCount++;
 
         emit VoteCasted(electionId, candidateId);
